@@ -1,0 +1,304 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <PreferredToolArchitecture>x64</PreferredToolArchitecture>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ResolveNugetPackages>false</ResolveNugetPackages>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="MinSizeRel|x64">
+      <Configuration>MinSizeRel</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="RelWithDebInfo|x64">
+      <Configuration>RelWithDebInfo</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{CDA782F2-4740-3B1D-89A4-129224EE4434}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0.22000.0</WindowsTargetPlatformVersion>
+    <Platform>x64</Platform>
+    <ProjectName>ALL_BUILD</ProjectName>
+    <VCProjectUpgraderObjectName>NoUpgrade</VCProjectUpgraderObjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'" Label="Configuration">
+    <ConfigurationType>Utility</ConfigurationType>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>10.0.20506.1</_ProjectFileVersion>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">$(Platform)\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">
+    <Midl>
+      <AdditionalIncludeDirectories>%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <OutputDirectory>$(ProjectDir)/$(IntDir)</OutputDirectory>
+      <HeaderFileName>%(Filename).h</HeaderFileName>
+      <TypeLibraryName>%(Filename).tlb</TypeLibraryName>
+      <InterfaceIdentifierFileName>%(Filename)_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>%(Filename)_p.c</ProxyFileName>
+    </Midl>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <CustomBuild Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeLists.txt">
+      <UseUtf8Encoding>Always</UseUtf8Encoding>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Building Custom Rule D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" "-SD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" "-BD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" --check-stamp-file "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeCCompiler.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeRCCompiler.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeSystem.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\cmake_uninstall.cmake.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw3.pc.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw3Config.cmake.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw_config.h.in;D:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDependentOption.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckCSourceCompiles.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckIncludeFile.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckLibraryExists.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-3.26\Modules\FindDoxygen.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindThreads.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\CheckSourceCompiles.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Building Custom Rule D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" "-SD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" "-BD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" --check-stamp-file "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeCCompiler.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeRCCompiler.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeSystem.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\cmake_uninstall.cmake.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw3.pc.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw3Config.cmake.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw_config.h.in;D:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDependentOption.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckCSourceCompiles.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckIncludeFile.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckLibraryExists.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-3.26\Modules\FindDoxygen.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindThreads.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\CheckSourceCompiles.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|x64'">D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">Building Custom Rule D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" "-SD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" "-BD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" --check-stamp-file "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeCCompiler.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeRCCompiler.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeSystem.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\cmake_uninstall.cmake.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw3.pc.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw3Config.cmake.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw_config.h.in;D:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDependentOption.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckCSourceCompiles.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckIncludeFile.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckLibraryExists.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-3.26\Modules\FindDoxygen.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindThreads.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\CheckSourceCompiles.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='MinSizeRel|x64'">false</LinkObjects>
+      <BuildInParallel Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">true</BuildInParallel>
+      <Message Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">Building Custom Rule D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeLists.txt</Message>
+      <Command Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">setlocal
+"D:\Program Files\CMake\bin\cmake.exe" "-SD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" "-BD:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8" --check-stamp-file "D:/Extra/[opengl] 3D Cellular Automata/3D Cellular Automata/glfw-3.3.8/CMakeFiles/generate.stamp"
+if %errorlevel% neq 0 goto :cmEnd
+:cmEnd
+endlocal &amp; call :cmErrorLevel %errorlevel% &amp; goto :cmDone
+:cmErrorLevel
+exit /b %1
+:cmDone
+if %errorlevel% neq 0 goto :VCEnd</Command>
+      <AdditionalInputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeCCompiler.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeRCCompiler.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\3.26.0-rc5\CMakeSystem.cmake;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\cmake_uninstall.cmake.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw3.pc.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw3Config.cmake.in;D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw_config.h.in;D:\Program Files\CMake\share\cmake-3.26\Modules\BasicConfigVersion-SameMajorVersion.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCCompilerABI.c;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCommonLanguageInclude.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeCompilerIdDetection.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDependentOption.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompileFeatures.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerABI.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineCompilerId.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeDetermineSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeFindBinUtils.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeGenericSystem.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeInitializeConfigs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeLanguageInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakePackageConfigHelpers.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitIncludeInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseImplicitLinkInfo.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeParseLibraryArchitecture.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCCompiler.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeRCInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystem.cmake.in;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInformation.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeSystemSpecificInitialize.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestCompilerCommon.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CMakeTestRCCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckCSourceCompiles.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckIncludeFile.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CheckLibraryExists.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ADSP-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMCC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\ARMClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\AppleClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Borland-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Bruce-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\CMakeCommonCompilerMacros.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Clang-DetermineCompilerInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Compaq-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Cray-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Embarcadero-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Fujitsu-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\FujitsuClang-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GHS-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\GNU-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\HP-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IAR-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMCPP-C-DetermineVersionInternal.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IBMClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Intel-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\IntelLLVM-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\LCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVHPC-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\NVIDIA-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\OpenWatcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PGI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\PathScale-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SCO-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SDCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\SunPro-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TI-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Tasking-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\TinyCC-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\VisualAge-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\Watcom-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XL-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\XLClang-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Compiler\zOS-C-DetermineCompiler.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\CompilerId\VS-10.vcxproj.in;D:\Program Files\CMake\share\cmake-3.26\Modules\FindDoxygen.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageHandleStandardArgs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindPackageMessage.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\FindThreads.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\GNUInstallDirs.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\CheckSourceCompiles.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Internal\FeatureTesting.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC-C.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows-MSVC.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\Windows.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\Platform\WindowsPaths.cmake;D:\Program Files\CMake\share\cmake-3.26\Modules\WriteBasicConfigVersionFile.cmake;%(AdditionalInputs)</AdditionalInputs>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\generate.stamp</Outputs>
+      <LinkObjects Condition="'$(Configuration)|$(Platform)'=='RelWithDebInfo|x64'">false</LinkObjects>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\ZERO_CHECK.vcxproj">
+      <Project>{0DFBF3D5-611F-3F87-A168-8AD1121FE24D}</Project>
+      <Name>ZERO_CHECK</Name>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\boing.vcxproj">
+      <Project>{6A811890-4599-39B3-872C-7FE16C9697B0}</Project>
+      <Name>boing</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\clipboard.vcxproj">
+      <Project>{7C3D7264-132D-3FC7-8677-A34829CAD888}</Project>
+      <Name>clipboard</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\cursor.vcxproj">
+      <Project>{A27D2A14-2316-3D2C-8FB6-59F1DA63C216}</Project>
+      <Name>cursor</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\empty.vcxproj">
+      <Project>{7D00FC8B-4848-39D2-813A-D23E978EA861}</Project>
+      <Name>empty</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\events.vcxproj">
+      <Project>{14E4F0EF-21A3-3B7B-B2F5-11D418F3C78D}</Project>
+      <Name>events</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\gamma.vcxproj">
+      <Project>{B08EDA9B-CF4A-33C6-B96B-1359C07C3D00}</Project>
+      <Name>gamma</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\gears.vcxproj">
+      <Project>{E3A8151B-1B2D-3754-9316-B2A682D8AE5D}</Project>
+      <Name>gears</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\src\glfw.vcxproj">
+      <Project>{7F3CE649-BAD6-3A17-8C41-01D64F05CA7E}</Project>
+      <Name>glfw</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\glfwinfo.vcxproj">
+      <Project>{BE6287F7-10FC-3842-A366-CC21CD2B7B9B}</Project>
+      <Name>glfwinfo</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\heightmap.vcxproj">
+      <Project>{F67FCC0E-3301-358F-A037-67951984CA9B}</Project>
+      <Name>heightmap</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\icon.vcxproj">
+      <Project>{252D5835-24E2-3DB6-82E4-C7EFF4EF3413}</Project>
+      <Name>icon</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\iconify.vcxproj">
+      <Project>{5D1122D3-0C78-3049-B513-6F66134E6F22}</Project>
+      <Name>iconify</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\inputlag.vcxproj">
+      <Project>{2364FF35-C397-3281-8F61-55874E77D76A}</Project>
+      <Name>inputlag</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\joysticks.vcxproj">
+      <Project>{B21B9623-23B1-3CD5-8F3F-51CE740D93C3}</Project>
+      <Name>joysticks</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\monitors.vcxproj">
+      <Project>{C063FEB6-6E2B-3CA6-8654-F02D16E9E2B8}</Project>
+      <Name>monitors</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\msaa.vcxproj">
+      <Project>{FF3172B3-FDDC-38DE-8505-4F7848122DC7}</Project>
+      <Name>msaa</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\offscreen.vcxproj">
+      <Project>{96FC4CDD-119D-30BC-BC6C-024B165C74EC}</Project>
+      <Name>offscreen</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\opacity.vcxproj">
+      <Project>{B7936C04-46AB-3E63-9071-9CE4CAABE693}</Project>
+      <Name>opacity</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\particles.vcxproj">
+      <Project>{28694B8D-0B17-352C-8831-74527C8E37BE}</Project>
+      <Name>particles</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\reopen.vcxproj">
+      <Project>{1930E3B3-820A-3BE7-A71B-9B00C92BECD7}</Project>
+      <Name>reopen</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\sharing.vcxproj">
+      <Project>{119722B7-0D0A-3E60-A342-E8959133ADAE}</Project>
+      <Name>sharing</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\simple.vcxproj">
+      <Project>{9D690A07-9925-3118-BFC7-BCBD226CC654}</Project>
+      <Name>simple</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\splitview.vcxproj">
+      <Project>{A6BF1C60-CDB8-3FC0-8722-F604A59008D0}</Project>
+      <Name>splitview</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\tearing.vcxproj">
+      <Project>{67D3CE0D-2EB6-3BCA-8086-84535BA5D838}</Project>
+      <Name>tearing</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\threads.vcxproj">
+      <Project>{D04E7A89-9400-3036-A37A-ABB68C335E3C}</Project>
+      <Name>threads</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\timeout.vcxproj">
+      <Project>{52A301D7-7CAB-3E3A-8848-484B1A93ACE2}</Project>
+      <Name>timeout</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\title.vcxproj">
+      <Project>{BBCB71C1-9891-3880-A57C-01C9577206B2}</Project>
+      <Name>title</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\triangle-vulkan.vcxproj">
+      <Project>{9BA0E9B3-0CAA-307C-BA1D-B0053483D5F2}</Project>
+      <Name>triangle-vulkan</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\examples\wave.vcxproj">
+      <Project>{0E1F0FD6-2B2E-387E-9A95-D4862F907346}</Project>
+      <Name>wave</Name>
+    </ProjectReference>
+    <ProjectReference Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\tests\windows.vcxproj">
+      <Project>{430F2E8E-DB0C-3BC0-9638-F8433DB774D2}</Project>
+      <Name>windows</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
