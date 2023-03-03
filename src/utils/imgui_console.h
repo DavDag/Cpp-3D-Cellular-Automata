@@ -1,17 +1,20 @@
 #pragma once
 
+class App;
+
 class ImGuiConsole {
 public:
-	ImGuiConsole(int rowCount, int rowLenght, bool autowrap);
-	void render();
+	ImGuiConsole(App& app, int rowCount, int rowLenght, bool autowrap);
+	void render(int w, int h);
 
 	void toggle();
 	void hide();
 	void show();
 
-	void log(const char* line, bool inplace = false);
+	void log(const char* fmt, ...);
 
 private:
+	App& _app;
 	bool _shown;
 	bool _autowrap; // TODO
 	int _rowCount, _rowLenght, _currentRow;

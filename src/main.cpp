@@ -12,8 +12,9 @@ void errorCallback(int errorCode, const char* description);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
 void mouseBtnCallback(GLFWwindow* window, int key, int action, int mods);
 void scrollCallback(GLFWwindow* window, double dx, double dy);
+void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 
-int initGLFW(GLFWwindow*& window, App& app);
+int initGLFW(GLFWwindow*& window, int w, int h, App& app);
 int initGLEW();
 int initImGui(GLFWwindow* window);
 
@@ -27,11 +28,12 @@ int main(int argc, char* argv[])
 int WinMain(int argc, char* argv[])
 #endif
 {
+    int w = 1920, h = 1080;
     App app;
 
     // Init
     GLFWwindow* window;
-    if (int err = initGLFW(window, app); err != 0) {
+    if (int err = initGLFW(window, w, h, app); err != 0) {
         std::cerr << "Error initializing GLFW, <code> = " << err << "\n";
         exit(err);
     }
@@ -45,14 +47,16 @@ int WinMain(int argc, char* argv[])
     }
 
     // Main loop
+    glfwSetTime(0);
     glfwSwapInterval(1);
     while (!glfwWindowShouldClose(window))
     {
+        glfwGetWindowSize(window, &w, &h);
         glfwPollEvents();
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
-        app.render();
+        app.render(w, h);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
@@ -69,17 +73,19 @@ int WinMain(int argc, char* argv[])
 // GLFW
 // ==========================================================================================
 
-int initGLFW(GLFWwindow*& window, App& app) {
+int initGLFW(GLFWwindow*& window, int w, int h, App& app) {
     glfwSetErrorCallback(errorCallback);
     if (!glfwInit()) return 1;
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 5);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE); // 4.5+ only
-    window = glfwCreateWindow(1920, 1080, "3D Cellular Automata", NULL, NULL);
+    window = glfwCreateWindow(w, h, "3D Cellular Automata", NULL, NULL);
     if (!window) return 2;
     glfwSetWindowUserPointer(window, &app);
     glfwSetKeyCallback(window, keyCallback);
     glfwSetMouseButtonCallback(window, mouseBtnCallback);
+    glfwSetScrollCallback(window, scrollCallback);
+    glfwSetFramebufferSizeCallback(window, framebufferSizeCallback);
     glfwMakeContextCurrent(window);
     return 0;
 }
@@ -111,6 +117,11 @@ void scrollCallback(GLFWwindow* window, double dx, double dy) {
     app.onMouseWheel(dx, dy);
 }
 
+void framebufferSizeCallback(GLFWwindow* window, int width, int height) {
+    App& app = *(App*)glfwGetWindowUserPointer(window);
+    app.onResize(width, height);
+}
+
 // ==========================================================================================
 // GLEW
 // ==========================================================================================
@@ -137,7 +148,7 @@ int initImGui(GLFWwindow* window) {
     if (!ImGui_ImplOpenGL3_Init("#version 450")) return 2;
     ImGuiIO& io = ImGui::GetIO();
     ImFontConfig cfg;
-    cfg.SizePixels = 32;
+    cfg.SizePixels = 24;
     io.Fonts->AddFontDefault(&cfg);
     return 0;
 }

@@ -43,7 +43,7 @@ const char* runtimeinfo::cpu::vendor() {
     }
 
     // Capture vendor string
-    char vendor[32];
+    static char vendor[32];
     memset(vendor, 0, sizeof(vendor));
     *reinterpret_cast<int*>(vendor) = data[0][1];
     *reinterpret_cast<int*>(vendor + 4) = data[0][3];
@@ -71,7 +71,7 @@ const char* runtimeinfo::cpu::brand() {
 
     // Interpret CPU brand string if reported
     if (nExIds >= 0x80000004) {
-        char brand[64];
+        static char brand[64];
         memset(brand, 0, sizeof(brand));
         memcpy(brand, extdata[2].data(), sizeof(cpui));
         memcpy(brand + 16, extdata[3].data(), sizeof(cpui));
@@ -79,7 +79,7 @@ const char* runtimeinfo::cpu::brand() {
         return brand;
     }
 
-    return nullptr;
+    return "\0";
 #endif
 }
 
