@@ -7,24 +7,27 @@
 #include <string>
 
 App::App()
-	: _console(*this, 128, 256, false)
+	: _console(*this, 128, 256, false), _display(*this, 0.5)
 {
-	this->_lastFrameTimeSec = 0;
+	this->_showUI = false;
+}
+
+void App::update(double dtSec) {
+	this->_console.update(dtSec);
+	this->_display.update(dtSec);
 }
 
 void App::render(int w, int h) {
-	//
-	double now = glfwGetTime();
-	double dtSec = (now - this->_lastFrameTimeSec);
-	this->_lastFrameTimeSec = now;
-	//
 	glClear(GL_COLOR_BUFFER_BIT);
-	this->_console.render(w, h);
-	// this->_console.log("abcd");
+	//
+	if (this->_showUI) {
+		this->_console.render(w, h);
+		this->_display.render(w, h);
+	}
 }
 
 void App::onKeyDown(int key) {
-	if (key == GLFW_KEY_TAB) this->_console.toggle();
+	if (key == GLFW_KEY_TAB) this->_showUI = !this->_showUI;
 }
 
 void App::onKeyUp(int key) {
@@ -56,9 +59,9 @@ void App::executeCmd(const char* cmd) {
 	if (strcmp("deps", cmd) == 0) {
 		this->_console.log(
 			"GLFW: %s\nGLEW: %s\nIMGUI: %s",
-			runtimeinfo::deps::glfwVersion(),
-			runtimeinfo::deps::glewVersion(),
-			runtimeinfo::deps::imguiVersion()
+			hwinfo::deps::glfwVersion(),
+			hwinfo::deps::glewVersion(),
+			hwinfo::deps::imguiVersion()
 		);
 	}
 
@@ -67,11 +70,12 @@ void App::executeCmd(const char* cmd) {
 	// retrieve hardware info (opengl, gpu & cpu)
 	if (strcmp("hwinfo", cmd) == 0) {
 		this->_console.log(
-			"OpenGL: %s\nGPU: %s\nCPU: %s\nThreads: %d",
-			runtimeinfo::opengl::version(),
-			runtimeinfo::gpu::renderer(),
-			runtimeinfo::cpu::brand(),
-			runtimeinfo::cpu::threadCount()
+			"OpenGL: %s\nGPU: %s\nCPU: %s\nThreads: %d\nRAM: %.2f (GB)",
+			hwinfo::opengl::version(),
+			hwinfo::gpu::renderer(),
+			hwinfo::cpu::brand(),
+			hwinfo::cpu::threadCount(),
+			hwinfo::mem::physicalTotMb() / 1024
 		);
 	}
 }

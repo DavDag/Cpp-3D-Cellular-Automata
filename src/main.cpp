@@ -1,12 +1,16 @@
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <backends/imgui_impl_glfw.h>
 #include <backends/imgui_impl_opengl3.h>
 #include <iostream>
 
 #include "app/app.hpp"
 #include "utils/hwinfo.hpp"
+
+#define RES_FHD
+//#define RES_4K
 
 void errorCallback(int errorCode, const char* description);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -22,13 +26,19 @@ void exitGLFW(GLFWwindow*& window);
 void exitGLEW();
 void exitImGui();
 
-#ifdef _CONSOLE
+int main(int argc, char* argv[]);
+int WinMain(int argc, char* argv[]) { return main(argc, argv); }
+
 int main(int argc, char* argv[])
-#elif _WIN32
-int WinMain(int argc, char* argv[])
-#endif
 {
+    hwinfo::init();
+    atexit(hwinfo::exit);
+
+#ifdef RES_FHD
+    int w = 1080, h = 720;
+#elif RES_4K
     int w = 1920, h = 1080;
+#endif
     App app;
 
     // Init
@@ -47,15 +57,23 @@ int WinMain(int argc, char* argv[])
     }
 
     // Main loop
-    glfwSetTime(0);
     glfwSwapInterval(1);
+    double lastFrameTimeSec = glfwGetTime();
     while (!glfwWindowShouldClose(window))
     {
-        glfwGetWindowSize(window, &w, &h);
+        glfwGetFramebufferSize(window, &w, &h);
         glfwPollEvents();
+        // update
+        double now = glfwGetTime();
+        double dtSec = (now - lastFrameTimeSec);
+        lastFrameTimeSec = now;
+        app.update(dtSec);
+        // render
         ImGui_ImplOpenGL3_NewFrame();
         ImGui_ImplGlfw_NewFrame();
         ImGui::NewFrame();
+        ImGui::SetShortcutRouting(ImGuiMod_Ctrl | ImGuiKey_Tab, ImGuiKeyOwner_None);
+        ImGui::SetShortcutRouting(ImGuiMod_Ctrl | ImGuiMod_Shift | ImGuiKey_Tab, ImGuiKeyOwner_None);
         app.render(w, h);
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
@@ -148,7 +166,11 @@ int initImGui(GLFWwindow* window) {
     if (!ImGui_ImplOpenGL3_Init("#version 450")) return 2;
     ImGuiIO& io = ImGui::GetIO();
     ImFontConfig cfg;
+#ifdef RES_FHD
+    cfg.SizePixels = 16;
+#elif RES_4K
     cfg.SizePixels = 24;
+#endif
     io.Fonts->AddFontDefault(&cfg);
     return 0;
 }

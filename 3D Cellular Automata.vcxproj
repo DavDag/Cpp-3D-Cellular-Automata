@@ -65,7 +65,7 @@
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)deps\glew-2.2.0\lib\Release\x64;$(ProjectDir)deps\glfw-3.3.8\src\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;ntdll.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -86,7 +86,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>$(ProjectDir)deps\glew-2.2.0\lib\Release\x64;$(ProjectDir)deps\glfw-3.3.8\src\Release</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;ntdll.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -100,7 +100,8 @@
     <ClCompile Include="src\app\app.cpp" />
     <ClCompile Include="src\utils\hwinfo.cpp" />
     <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\utils\imgui_console.cpp" />
+    <ClCompile Include="src\utils\console.cpp" />
+    <ClCompile Include="src\utils\usagedisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui-1.89.3\backends\imgui_impl_glfw.h" />
@@ -111,7 +112,8 @@
     <ClInclude Include="deps\imgui-1.89.3\imgui_internal.h" />
     <ClInclude Include="src\app\app.hpp" />
     <ClInclude Include="src\utils\hwinfo.hpp" />
-    <ClInclude Include="src\utils\imgui_console.h" />
+    <ClInclude Include="src\utils\console.hpp" />
+    <ClInclude Include="src\utils\usagedisplay.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

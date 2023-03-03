@@ -1,11 +1,13 @@
 #pragma once
 
-#include "../utils/imgui_console.h"
+#include "../utils/console.hpp"
+#include "../utils/usagedisplay.hpp"
 
 class App {
 public:
 	App();
 	void render(int w, int h);
+	void update(double dtSec);
 
 	void onKeyDown(int key);
 	void onKeyUp(int key);
@@ -17,7 +19,8 @@ public:
 	void executeCmd(const char* cmd);
 
 private:
-	double _lastFrameTimeSec;
-	ImGuiConsole _console;
+	bool _showUI;
+	UsageDisplay _display;
+	Console _console;
 };
 
