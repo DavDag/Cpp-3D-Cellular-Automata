@@ -6,8 +6,9 @@
 
 #include <string>
 
-App::App()
-	: _console(*this, 128, 256, false), _display(*this, 0.5)
+App::App():
+	_console(*this, 128, 256, false),
+	_display(*this, 1)
 {
 	this->_showUI = false;
 }
@@ -61,10 +62,11 @@ void App::executeCmd(const char* cmd) {
 	// retrieve dependencies versions
 	if (strcmp("deps", cmd) == 0) {
 		this->_console.log(
-			"GLFW: %s\nGLEW: %s\nIMGUI: %s",
+			"GLFW: %s\nGLEW: %s\nIMGUI: %s\nGLM: %s",
 			hwinfo::deps::glfwVersion(),
 			hwinfo::deps::glewVersion(),
-			hwinfo::deps::imguiVersion()
+			hwinfo::deps::imguiVersion(),
+			hwinfo::deps::glmVersion()
 		);
 	}
 

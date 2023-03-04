@@ -1,20 +1,7 @@
 /.vs
 /build
 
-/deps/glew**/doc
-/deps/glfw**/.vs
-/deps/glfw**/CMake**
-/deps/glfw**/doc**
-/deps/glfw**/examples
-/deps/glfw**/glfw.dir/
-/deps/glfw**/docs
-/deps/glfw**/x64
-/deps/imgui**/.github
-/deps/imgui**/misc
-/deps/imgui**/docs
-/deps/imgui**/examples
-
 imgui.ini
 
-*.filters
-*.user
+/*.filters
+/*.user

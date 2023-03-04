@@ -3,6 +3,7 @@
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <imgui.h>
+#include <glm/glm.hpp>
 
 #include <thread>
 #include <vector>
@@ -330,31 +331,41 @@ double hwinfo::mem::physicalTotMb() {
 
 const char* hwinfo::deps::glfwVersion() {
     static bool __computed = false;
-    static const char* result;
+    static char result[64];
     if (__computed) return result;
     __computed = true;
     //
-    result = glfwGetVersionString();
+    strcpy_s(result, 64, glfwGetVersionString());
     return result;
 }
 
 const char* hwinfo::deps::glewVersion() {
     static bool __computed = false;
-    static const char* result;
+    static char result[64];
     if (__computed) return result;
     __computed = true;
     //
-    result = reinterpret_cast<const char*>(glewGetString(GLEW_VERSION));
+    strcpy_s(result, 64, (const char*) glewGetString(GLEW_VERSION));
     return result;
 }
 
 const char* hwinfo::deps::imguiVersion() {
     static bool __computed = false;
-    static const char* result;
+    static char result[64];
     if (__computed) return result;
     __computed = true;
     //
-    result = IMGUI_VERSION;
+    strcpy_s(result, 64, IMGUI_VERSION);
+    return result;
+}
+
+const char* hwinfo::deps::glmVersion() {
+    static bool __computed = false;
+    static char result[64];
+    if (__computed) return result;
+    __computed = true;
+    //
+    strcpy_s(result, 64, "0.9.9.8");
     return result;
 }
 

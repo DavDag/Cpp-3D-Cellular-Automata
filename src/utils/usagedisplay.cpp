@@ -6,8 +6,8 @@
 #include <string>
 #include <iostream>
 
-UsageDisplay::UsageDisplay(App& app, float updatePerSec)
-	: _app(app)
+UsageDisplay::UsageDisplay(App& app, float updatePerSec):
+	_app(app)
 {
 	this->_timeFromLastUpdateSec = 0.0;
 	this->_updateIntervalSec = 1.0 / updatePerSec;

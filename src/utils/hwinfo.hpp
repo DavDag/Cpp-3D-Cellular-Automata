@@ -42,6 +42,7 @@ namespace hwinfo {
         const char* glfwVersion();
         const char* glewVersion();
         const char* imguiVersion();
+        const char* glmVersion();
     }
 
 }

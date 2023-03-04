@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="17.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <CustomBuild Include="D:\Extra\[opengl] 3D Cellular Automata\3D Cellular Automata\glfw-3.3.8\CMakeFiles\7075e6a781f0b1de2c99fea3cb79eb01\INSTALL_force.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{857A36B1-8793-38DD-8802-BB8EDAE1257A}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>

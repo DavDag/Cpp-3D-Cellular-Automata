@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <imgui.h>
 
-Console::Console(App& app, int rowCount, int rowLenght, bool autowrap)
-	: _app(app)
+Console::Console(App& app, int rowCount, int rowLenght, bool autowrap):
+	_app(app)
 {
 	this->_autowrap = autowrap;
 	this->_rowCount = rowCount;
@@ -76,6 +76,7 @@ void Console::log(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
 	int n = vsnprintf(beg, this->_rowLenght, fmt, args);
+	beg[n] = ' ';
 	va_end(args);
 	//
 	this->_currentRow = (this->_currentRow + 1) % this->_rowCount;
