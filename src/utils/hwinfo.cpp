@@ -21,14 +21,31 @@
 #include <pdhmsg.h>
 #endif
 
-//
 #ifdef _WIN32
 HANDLE hCurrentProcess;
 DWORD currentProcessId;
 PDH_HQUERY gpuUsageQuery;
 HCOUNTER gpuUsageCounter;
+PDH_HQUERY gpuMemUsageQuery;
+HCOUNTER gpuMemDedicatedUsageCounter;
+HCOUNTER gpuMemSharedUsageCounter;
 #endif // _WIN32
 
+// ====================================
+// Extra
+// ====================================
+
+const char* hwinfo::extra::pid() {
+    static bool __computed = false;
+    static char result[8];
+    if (__computed) return result;
+    __computed = true;
+    //
+#ifdef _WIN32
+    snprintf(result, 8, "%u", currentProcessId);
+#endif // _WIN32
+    return result;
+}
 
 // ====================================
 // OpenGL
@@ -48,6 +65,16 @@ const char* hwinfo::opengl::version() {
 // GPU
 // ====================================
 
+const char* hwinfo::gpu::vendor() {
+    static bool __computed = false;
+    static const char* result;
+    if (__computed) return result;
+    __computed = true;
+    //
+    result = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    return result;
+}
+
 const char* hwinfo::gpu::renderer() {
     static bool __computed = false;
     static const char* result;
@@ -58,13 +85,44 @@ const char* hwinfo::gpu::renderer() {
     return result;
 }
 
+bool hwinfo::gpu::isIntel() {
+    static bool __computed = false;
+    static bool result = false;
+    if (__computed) return result;
+    __computed = false;
+    //
+    result = strcmp("Intel", hwinfo::gpu::vendor());
+    return result;
+}
+
+bool hwinfo::gpu::isNVidia() {
+    static bool __computed = false;
+    static bool result = false;
+    if (__computed) return result;
+    __computed = false;
+    //
+    result = strcmp("NVidia", hwinfo::gpu::vendor());
+    return result;
+}
+
+bool hwinfo::gpu::isAMD() {
+    static bool __computed = false;
+    static bool result = false;
+    if (__computed) return result;
+    __computed = false;
+    //
+    result = strcmp("AMD", hwinfo::gpu::vendor());
+    return result;
+}
+
 double hwinfo::gpu::usage() {
+    double result = 0;
 #ifdef _WIN32
     static DWORD bufferSize = sizeof(PDH_FMT_COUNTERVALUE_ITEM) * 128, itemCount = 0;
     static PDH_FMT_COUNTERVALUE_ITEM* pdhItems = (PDH_FMT_COUNTERVALUE_ITEM*) new unsigned char[bufferSize];
     // https://askldjd.wordpress.com/2011/01/05/a-pdh-helper-class-cpdhquery/
     PDH_STATUS Status = ERROR_SUCCESS;
-    double percent = -1;
+    double percent = 0;
     while(true && gpuUsageQuery) {
         Status = PdhCollectQueryData(gpuUsageQuery);
         if (Status != ERROR_SUCCESS) break;
@@ -81,18 +139,50 @@ double hwinfo::gpu::usage() {
         //
         break;
     }
-    if (Status != ERROR_SUCCESS) printf("PDH error: 0x%x", Status);
-    return percent;
+    if (Status != ERROR_SUCCESS && Status != PDH_NO_DATA) printf("PDH error: 0x%x", Status);
+    result = percent;
 #endif // _WIN32
+    return result;
 }
 
-const char* hwinfo::gpu::vendor() {
+double hwinfo::gpu::usageMb() {
+    double result = 0;
+#ifdef _WIN32
+    PDH_FMT_COUNTERVALUE DedicatedValue, SharedValue;
+    PDH_STATUS Status = ERROR_SUCCESS;
+    double usage = 0;
+    while (true && gpuMemUsageQuery) {
+        Status = PdhCollectQueryData(gpuMemUsageQuery);
+        if (Status != ERROR_SUCCESS) break;
+        //
+        PdhGetFormattedCounterValue(gpuMemDedicatedUsageCounter, PDH_FMT_LONG, NULL, &DedicatedValue);
+        if (Status != ERROR_SUCCESS) break;
+        usage += DedicatedValue.longValue / BYTES_TO_MB_DOUBLE;
+        //
+        PdhGetFormattedCounterValue(gpuMemSharedUsageCounter, PDH_FMT_LONG, NULL, &SharedValue);
+        if (Status != ERROR_SUCCESS) break;
+        usage += SharedValue.longValue / BYTES_TO_MB_DOUBLE;
+        //
+        break;
+    }
+    if (Status != ERROR_SUCCESS && Status != PDH_NO_DATA) printf("PDH error: 0x%x", Status);
+    result = usage;
+#endif // _WIN32
+    return result;
+}
+
+double hwinfo::gpu::availableMb() {
+    double result = 0;
+    // TODO:
+    return result;
+}
+
+double hwinfo::gpu::physicalTotMb() {
     static bool __computed = false;
-    static const char* result;
+    static double result = 0;
     if (__computed) return result;
-    __computed = true;
-    //
-    result = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
+    __computed = false;
+    // TODO:
     return result;
 }
 
@@ -120,26 +210,23 @@ const char* hwinfo::cpu::vendor() {
     int nIds;
     std::array<int, 4> cpui;
     std::vector<std::array<int, 4>> data;
-
-    // Calling __cpuid with 0x0 as the function_id argument
-    // gets the number of the highest valid function ID.
+    //
     __cpuid(cpui.data(), 0);
     nIds = cpui[0];
     for (int i = 0; i <= nIds; ++i) {
         __cpuidex(cpui.data(), i, 0);
         data.push_back(cpui);
     }
-
-    // Capture vendor string
+    //
     char vendor[32];
     memset(vendor, 0, sizeof(vendor));
     *reinterpret_cast<int*>(vendor) = data[0][1];
     *reinterpret_cast<int*>(vendor + 4) = data[0][3];
     *reinterpret_cast<int*>(vendor + 8) = data[0][2];
-
+    //
     memcpy(result, vendor, sizeof(char) * 32);
-    return result;
 #endif // _WIN32
+    return result;
 }
 
 const char* hwinfo::cpu::brand() {
@@ -152,17 +239,14 @@ const char* hwinfo::cpu::brand() {
     int nExIds;
     std::array<int, 4> cpui;
     std::vector<std::array<int, 4>> extdata;
-
-    // Calling __cpuid with 0x80000000 as the function_id argument
-    // gets the number of the highest valid extended ID.
+    //
     __cpuid(cpui.data(), 0x80000000);
     nExIds = cpui[0];
     for (int i = 0x80000000; i <= nExIds; ++i) {
         __cpuidex(cpui.data(), i, 0);
         extdata.push_back(cpui);
     }
-
-    // Interpret CPU brand string if reported
+    //
     if (nExIds >= 0x80000004) {
         static char brand[64];
         memset(brand, 0, sizeof(brand));
@@ -171,12 +255,13 @@ const char* hwinfo::cpu::brand() {
         memcpy(brand + 32, extdata[4].data(), sizeof(cpui));
         memcpy(result, brand, sizeof(char) * 64);
     }
-
-    return result;
 #endif // _WIN32
+    return result;
 }
 
 double hwinfo::cpu::usage(double cores[]) {
+    double result = 0;
+    memset(cores, 0, sizeof(double) * hwinfo::cpu::threadCount());
 #if _WIN32
     // https://stackoverflow.com/questions/53306819/accurate-system-cpu-usage-in-windows
     static PSYSTEM_PROCESSOR_PERFORMANCE_INFORMATION lastValues = new SYSTEM_PROCESSOR_PERFORMANCE_INFORMATION[hwinfo::cpu::threadCount()];
@@ -195,8 +280,9 @@ double hwinfo::cpu::usage(double cores[]) {
     }
     //
     memcpy(lastValues, newValues, sizeof(newValues[0]) * hwinfo::cpu::threadCount());
-    return percent / hwinfo::cpu::threadCount();
+    result = percent / hwinfo::cpu::threadCount();
 #endif // _WIN32
+    return result;
 }
 
 // ====================================
@@ -204,25 +290,29 @@ double hwinfo::cpu::usage(double cores[]) {
 // ====================================
 
 double hwinfo::mem::usageMb() {
+    double result = 0;
 #ifdef _WIN32
     PROCESS_MEMORY_COUNTERS_EX pmc;
     int succeded = (GetProcessMemoryInfo(hCurrentProcess, (PROCESS_MEMORY_COUNTERS*)&pmc, sizeof(pmc)) != 0);
-    return (succeded) ? pmc.PrivateUsage / BYTES_TO_MB_DOUBLE : -1;
+    result = (succeded) ? pmc.PrivateUsage / BYTES_TO_MB_DOUBLE : 0;
 #endif // _WIN32
+    return result;
 }
 
 double hwinfo::mem::availableMb() {
+    double result = 0;
 #ifdef _WIN32
     MEMORYSTATUSEX memInfo;
     memInfo.dwLength = sizeof(MEMORYSTATUSEX);
     GlobalMemoryStatusEx(&memInfo);
-    return memInfo.ullAvailPhys / BYTES_TO_MB_DOUBLE;
+    result = memInfo.ullAvailPhys / BYTES_TO_MB_DOUBLE;
 #endif // _WIN32
+    return result;
 }
 
 double hwinfo::mem::physicalTotMb() {
     static bool __computed = false;
-    static double result = -1;
+    static double result = 0;
     if (__computed) return result;
     __computed = true;
 #ifdef _WIN32
@@ -292,12 +382,32 @@ void hwinfo::init() {
         //
         break;
     }
-    if (Status != ERROR_SUCCESS) printf("PDH error: 0x%x\n", Status);
+    if (Status != ERROR_SUCCESS && Status != PDH_NO_DATA) printf("PDH error: 0x%x\n", Status);
+    //
+    Status = ERROR_SUCCESS;
+    while (true) {
+        Status = PdhOpenQuery(NULL, NULL, &gpuMemUsageQuery);
+        if (Status != ERROR_SUCCESS) break;
+        //
+        WCHAR gpuMemUsageQueryBuffer[PDH_MAX_COUNTER_PATH];
+        wsprintf(gpuMemUsageQueryBuffer, L"\\GPU Process Memory(pid_%d*)\\Dedicated Usage", currentProcessId);
+        Status = PdhAddCounter(gpuMemUsageQuery, gpuMemUsageQueryBuffer, 0, &gpuMemDedicatedUsageCounter);
+        wsprintf(gpuMemUsageQueryBuffer, L"\\GPU Process Memory(pid_%d*)\\Shared Usage", currentProcessId);
+        Status = PdhAddCounter(gpuMemUsageQuery, gpuMemUsageQueryBuffer, 0, &gpuMemSharedUsageCounter);
+        if (Status != ERROR_SUCCESS) break;
+        //
+        Status = PdhCollectQueryData(gpuMemUsageQuery);
+        if (Status != ERROR_SUCCESS) break;
+        //
+        break;
+    }
+    if (Status != ERROR_SUCCESS && Status != PDH_NO_DATA) printf("PDH error: 0x%x\n", Status);
 #endif // _WIN32
 }
 
 void hwinfo::exit() {
 #if _WIN32
     if (gpuUsageQuery) PdhCloseQuery(gpuUsageQuery);
+    if (gpuMemUsageQuery) PdhCloseQuery(gpuMemUsageQuery);
 #endif // _WIN32
 }

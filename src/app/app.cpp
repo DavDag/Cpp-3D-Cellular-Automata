@@ -73,26 +73,13 @@ void App::executeCmd(const char* cmd) {
 	// retrieve hardware info (opengl, gpu & cpu)
 	if (strcmp("hwinfo", cmd) == 0) {
 		this->_console.log(
-			"OpenGL: %s\nGPU: %s\nCPU: %s\nThreads: %d\nRAM: %.2f (GB)",
+			"OpenGL: %s\nGPU: %s | %s\nCPU: %s | %s\nThreads: %d\nRAM: %.2f (GB)",
 			hwinfo::opengl::version(),
-			hwinfo::gpu::renderer(),
-			hwinfo::cpu::brand(),
+			hwinfo::gpu::vendor(), hwinfo::gpu::renderer(),
+			hwinfo::cpu::vendor(), hwinfo::cpu::brand(),
 			hwinfo::cpu::threadCount(),
 			hwinfo::mem::physicalTotMb() / 1024
 		);
-	}
-
-	// ==================================================
-	// cpuload
-	// simulate load on the cpu
-	if (strcmp("cpuload", cmd) == 0) {
-		this->_console.log("Simulating load");
-		int tmp = 0;
-		for (int a = 1; a < 1000; a++)
-			for (int b = 1; b < 1000; b++)
-				for (int c = 1; c < 1000; c++)
-					for (int d = 1; d < 2; d++)
-						tmp = (tmp + (a * b)) % (c * d);
 	}
 }
 

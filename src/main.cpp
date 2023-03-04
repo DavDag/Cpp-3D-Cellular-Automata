@@ -9,8 +9,8 @@
 #include "app/app.hpp"
 #include "utils/hwinfo.hpp"
 
-#define RES_FHD
-//#define RES_4K
+//#define RES_FHD
+#define RES_4K
 
 void errorCallback(int errorCode, const char* description);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -29,16 +29,16 @@ void exitImGui();
 int main(int argc, char* argv[]);
 int WinMain(int argc, char* argv[]) { return main(argc, argv); }
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     hwinfo::init();
     atexit(hwinfo::exit);
 
 #ifdef RES_FHD
     int w = 1080, h = 720;
-#elif RES_4K
+#endif // RES_FHD
+#ifdef RES_4K
     int w = 1920, h = 1080;
-#endif
+#endif // RES_4K
     App app;
 
     // Init
@@ -168,9 +168,10 @@ int initImGui(GLFWwindow* window) {
     ImFontConfig cfg;
 #ifdef RES_FHD
     cfg.SizePixels = 16;
-#elif RES_4K
+#endif // RES_FHD
+#ifdef RES_4K
     cfg.SizePixels = 24;
-#endif
+#endif // RES_4K
     io.Fonts->AddFontDefault(&cfg);
     return 0;
 }

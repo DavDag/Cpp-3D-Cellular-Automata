@@ -20,10 +20,14 @@ private:
 	//
 	double _fps;
 	double _memUsagePercentage;
-	double _memUsage;
-	double _memAvailable;
+	double _memUsageMb;
+	double _memAvailableMb;
+	double _memPhysicalMb;
+	double _gpuUsagePercentage;
+	double _gpuMemUsageMb;
+	double _gpuMemAvailableMb;
+	double _gpuMemPhysicalMb;
 	double _cpuUsagePercentageAllCores;
 	int _coreCount;
 	double* _cpuUsagePercentagePerCore;
-	double _gpuUsagePercentage;
 };

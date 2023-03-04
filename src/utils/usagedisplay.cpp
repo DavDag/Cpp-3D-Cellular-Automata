@@ -14,10 +14,14 @@ UsageDisplay::UsageDisplay(App& app, float updatePerSec)
 	//
 	this->_fps = 0;
 	this->_memUsagePercentage = 0;
-	this->_memUsage = 0;
-	this->_memAvailable = 0;
+	this->_memUsageMb = 0;
+	this->_memAvailableMb = 0;
+	this->_memPhysicalMb = 0;
 	this->_cpuUsagePercentageAllCores = 0;
 	this->_gpuUsagePercentage = 0;
+	this->_gpuMemUsageMb = 0;
+	this->_gpuMemAvailableMb = 0;
+	this->_gpuMemPhysicalMb = 0;
 	this->_coreCount = hwinfo::cpu::threadCount();
 	this->_cpuUsagePercentagePerCore = new double[_coreCount];
 	memset(this->_cpuUsagePercentagePerCore, 0, sizeof(double) * _coreCount);
@@ -26,6 +30,7 @@ UsageDisplay::UsageDisplay(App& app, float updatePerSec)
 }
 
 void UsageDisplay::render(int w, int h) {
+	//ImGui::ShowDemoWindow();
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
@@ -33,11 +38,23 @@ void UsageDisplay::render(int w, int h) {
 		| ImGuiWindowFlags_NoTitleBar
 		| ImGuiWindowFlags_NoFocusOnAppearing;
 	ImGui::Begin("Usage", nullptr, windowFlags);
-	ImGui::Text("Fps: %-6.2f", this->_fps);
-	ImGui::Text("Mem: %-8.2f Mb", this->_memUsage);
-	ImGui::Text("GPU: %5.2f%%", this->_gpuUsagePercentage);
-	ImGui::Text("CPU: %5.2f%%", this->_cpuUsagePercentageAllCores);
 	//
+	ImGui::Text("PID: %-8s", hwinfo::extra::pid());
+	ImGui::Text("Fps: %-6.2f", this->_fps);
+	//
+	ImGui::SeparatorText("RAM");
+	ImGui::Text("Used: %8.2f Mb", this->_memUsageMb);
+	ImGui::Text("Free: %8.2f Gb", this->_memAvailableMb / 1024.0);
+	ImGui::Text("Tot: %9.2f Gb", this->_memPhysicalMb / 1024.0);
+	//
+	ImGui::SeparatorText("GPU");
+	ImGui::Text("Usage: %8.2f %%", this->_gpuUsagePercentage);
+	ImGui::Text("Used: %8.2f Mb", this->_gpuMemUsageMb);
+	ImGui::Text("Free: %8.2f Mb", this->_gpuMemAvailableMb);
+	ImGui::Text("Tot: %9.2f Mb", this->_gpuMemPhysicalMb);
+	//
+	ImGui::SeparatorText("CPU");
+	ImGui::Text("Usage: %8.2f %%", this->_cpuUsagePercentageAllCores);
 	const int ncores = this->_coreCount;
 	const int ncols = (ncores > 8) ? 4 : 2;
 	ImGui::BeginTable("cores", ncols);
@@ -80,17 +97,18 @@ void UsageDisplay::__update() {
 	this->_fpsAccumulator = 0;
 
 	// Memory
-	this->_memUsage = hwinfo::mem::usageMb();
-	this->_memAvailable = hwinfo::mem::availableMb();
-	this->_memUsagePercentage = (this->_memUsage / this->_memAvailable) * 100.0;
+	this->_memUsageMb = hwinfo::mem::usageMb();
+	this->_memAvailableMb = hwinfo::mem::availableMb();
+	this->_memPhysicalMb = hwinfo::mem::physicalTotMb();
+	this->_memUsagePercentage = (this->_memUsageMb / this->_memAvailableMb) * 100.0;
+
+	// GPU
+	this->_gpuUsagePercentage = hwinfo::gpu::usage();
+	this->_gpuMemUsageMb = hwinfo::gpu::usageMb();
+	this->_gpuMemAvailableMb = hwinfo::gpu::availableMb();
+	this->_gpuMemPhysicalMb = hwinfo::gpu::physicalTotMb();
 
 	// CPU
 	this->_cpuUsagePercentageAllCores = hwinfo::cpu::usage(this->_cpuUsagePercentagePerCore);
 
-	double step = 100.0 / this->_coreCount;
-	for (int core = 0; core < this->_coreCount; ++core)
-		this->_cpuUsagePercentagePerCore[core] = core * step;
-
-	// GPU
-	this->_gpuUsagePercentage = hwinfo::gpu::usage();
 }
