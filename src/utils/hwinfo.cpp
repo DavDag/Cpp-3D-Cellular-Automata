@@ -75,6 +75,7 @@ double hwinfo::gpu::usage() {
         //
         PdhGetFormattedCounterArray(gpuUsageCounter, PDH_FMT_DOUBLE, &bufferSize, &itemCount, pdhItems);
         if (Status != ERROR_SUCCESS) break;
+        percent = 0.0;
         for (int i = 0; i < itemCount; i++)
             percent += pdhItems[i].FmtValue.doubleValue;
         //

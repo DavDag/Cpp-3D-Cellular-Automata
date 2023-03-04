@@ -53,6 +53,9 @@ void App::onResize(int width, int height) {
 void App::executeCmd(const char* cmd) {
 	this->_console.log(cmd);
 
+	// Parse cmd, substitute ' ' with '\0'
+	// and "create" a string list.
+
 	// ==================================================
 	// deps
 	// retrieve dependencies versions
@@ -77,6 +80,19 @@ void App::executeCmd(const char* cmd) {
 			hwinfo::cpu::threadCount(),
 			hwinfo::mem::physicalTotMb() / 1024
 		);
+	}
+
+	// ==================================================
+	// cpuload
+	// simulate load on the cpu
+	if (strcmp("cpuload", cmd) == 0) {
+		this->_console.log("Simulating load");
+		int tmp = 0;
+		for (int a = 1; a < 1000; a++)
+			for (int b = 1; b < 1000; b++)
+				for (int c = 1; c < 1000; c++)
+					for (int d = 1; d < 2; d++)
+						tmp = (tmp + (a * b)) % (c * d);
 	}
 }
 

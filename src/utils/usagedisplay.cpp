@@ -20,27 +20,43 @@ UsageDisplay::UsageDisplay(App& app, float updatePerSec)
 	this->_gpuUsagePercentage = 0;
 	this->_coreCount = hwinfo::cpu::threadCount();
 	this->_cpuUsagePercentagePerCore = new double[_coreCount];
-	memset(this->_cpuUsagePercentagePerCore, 0, sizeof(float) * _coreCount);
+	memset(this->_cpuUsagePercentagePerCore, 0, sizeof(double) * _coreCount);
 	//
 	this->__initialize();
 }
 
 void UsageDisplay::render(int w, int h) {
-	ImGui::SetNextWindowPos(ImVec2(w * 0.8, 0), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(w * 0.2, h * 0.5), ImGuiCond_Always);
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse
-		| ImGuiWindowFlags_NoResize
+		| ImGuiWindowFlags_AlwaysAutoResize
 		| ImGuiWindowFlags_NoMove
 		| ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_NoTitleBar
 		| ImGuiWindowFlags_NoFocusOnAppearing;
 	ImGui::Begin("Usage", nullptr, windowFlags);
-	ImGui::Text("Fps: %.2f", this->_fps);
-	ImGui::Text("Mem: %2.2fMb (%2.2f%%)", this->_memUsage, this->_memUsagePercentage);
-	ImGui::Text("GPU: %2.2f%%", this->_gpuUsagePercentage);
-	ImGui::Text("CPU: %2.2f%%", this->_cpuUsagePercentageAllCores);
-	for (int core = 0; core < this->_coreCount; ++core)
-		ImGui::Text("CPU #%02d: %2.2f%%", core, this->_cpuUsagePercentagePerCore[core]);
+	ImGui::Text("Fps: %-6.2f", this->_fps);
+	ImGui::Text("Mem: %-8.2f Mb", this->_memUsage);
+	ImGui::Text("GPU: %5.2f%%", this->_gpuUsagePercentage);
+	ImGui::Text("CPU: %5.2f%%", this->_cpuUsagePercentageAllCores);
+	//
+	const int ncores = this->_coreCount;
+	const int ncols = (ncores > 8) ? 4 : 2;
+	ImGui::BeginTable("cores", ncols);
+	for (int core = 0; core < ncores; ++core) {
+		float usage = this->_cpuUsagePercentagePerCore[core] / 100.0;
+		ImGui::TableNextColumn();
+		//
+		ImGuiIO& io = ImGui::GetIO();
+		ImDrawList* draw_list = ImGui::GetWindowDrawList();
+		ImVec2 size = ImGui::CalcTextSize("100%");
+		size.x = ImGui::GetColumnWidth();
+		ImVec2 pos = ImGui::GetCursorScreenPos();
+		ImColor col = IM_COL32(255, 255 * (1.0 - usage), 0, 128);
+		draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), col);
+		//
+		ImGui::Text("%3.0f%%", this->_cpuUsagePercentagePerCore[core]);
+	}
+	ImGui::EndTable();
+	ImGui::SetWindowPos(ImVec2(w - ImGui::GetWindowWidth(), 0), ImGuiCond_Always);
 	ImGui::End();
 }
 
@@ -70,6 +86,10 @@ void UsageDisplay::__update() {
 
 	// CPU
 	this->_cpuUsagePercentageAllCores = hwinfo::cpu::usage(this->_cpuUsagePercentagePerCore);
+
+	double step = 100.0 / this->_coreCount;
+	for (int core = 0; core < this->_coreCount; ++core)
+		this->_cpuUsagePercentagePerCore[core] = core * step;
 
 	// GPU
 	this->_gpuUsagePercentage = hwinfo::gpu::usage();
