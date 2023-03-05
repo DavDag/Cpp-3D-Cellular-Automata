@@ -13,6 +13,6 @@ private:
 	App& _app;
 	bool _autowrap;
 	int _rowCount, _rowLenght, _currentRow;
-	char* _buffer;
+	char** _lines;
 	char* _cmdBuffer;
 };

@@ -11,9 +11,12 @@ Console::Console(App& app, int rowCount, int rowLenght, bool autowrap):
 	this->_rowCount = rowCount;
 	this->_rowLenght = rowLenght;
 	this->_currentRow = 0;
-	this->_buffer = new char[_rowCount * _rowLenght];
+	this->_lines = new char*[_rowCount];
 	this->_cmdBuffer = new char[_rowLenght];
-	memset(this->_buffer, ' ', sizeof(char) * _rowCount * _rowLenght);
+	char* buffer = new char[_rowCount * _rowLenght];
+	memset(buffer, '\0', sizeof(char) * _rowCount * _rowLenght);
+	for (int i = 0; i < _rowCount; ++i)
+		this->_lines[i] = &buffer[i * _rowLenght];
 	memset(this->_cmdBuffer, '\0', sizeof(char) * _rowLenght);
 }
 
@@ -34,6 +37,8 @@ void Console::render(int w, int h) {
 	ImGui::Checkbox("Autowrap", &this->_autowrap);
 	ImGui::PushItemWidth(w * 0.3);
 	ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_EnterReturnsTrue;
+	if (ImGui::IsWindowAppearing())
+		ImGui::SetKeyboardFocusHere();
 	if (ImGui::InputText("##cmdline", this->_cmdBuffer, this->_rowLenght, inputFlags)) {
 		this->_app.executeCmd(this->_cmdBuffer);
 		memset(this->_cmdBuffer, '\0', sizeof(char) * this->_rowLenght);
@@ -48,8 +53,8 @@ void Console::render(int w, int h) {
 	while (clipper.Step())
 		for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
 			int j = (this->_currentRow - i + this->_rowCount - 1) % this->_rowCount;
-			const char* rowBeg = &(this->_buffer[j * this->_rowLenght]);
-			const char* rowEnd = rowBeg + this->_rowLenght - 2;
+			const char* rowBeg = this->_lines[j];
+			const char* rowEnd = rowBeg + strlen(this->_lines[j]);
 			//
 			ImGuiIO& io = ImGui::GetIO();
 			ImDrawList* draw_list = ImGui::GetWindowDrawList();
@@ -70,13 +75,12 @@ void Console::render(int w, int h) {
 }
 
 void Console::log(const char* fmt, ...) {
-	char* beg = &(this->_buffer[this->_currentRow * this->_rowLenght]);
-	memset(beg, ' ', this->_rowLenght);
+	char* rowBeg = this->_lines[this->_currentRow];
+	memset(rowBeg, '\0', this->_rowLenght);
 	//
 	va_list args;
 	va_start(args, fmt);
-	int n = vsnprintf(beg, this->_rowLenght, fmt, args);
-	beg[n] = ' ';
+	int n = vsnprintf(rowBeg, this->_rowLenght, fmt, args);
 	va_end(args);
 	//
 	this->_currentRow = (this->_currentRow + 1) % this->_rowCount;

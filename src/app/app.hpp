@@ -2,6 +2,10 @@
 
 #include "../utils/console.hpp"
 #include "../utils/usagedisplay.hpp"
+#include "../simulation/simulation.hpp"
+#include "command.hpp"
+
+#include <vector>
 
 class App {
 public:
@@ -17,10 +21,14 @@ public:
 	void onResize(int w, int h);
 
 	void executeCmd(const char* cmd);
+	void execute(int type, CommandArgs* args);
 
 private:
 	bool _showUI;
-	UsageDisplay _display;
+	std::vector<Command*> _commands;
 	Console _console;
+	UsageDisplay _display;
+	//
+	Simulation _simulation;
 };
 

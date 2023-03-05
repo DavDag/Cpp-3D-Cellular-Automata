@@ -9,8 +9,8 @@
 #include "app/app.hpp"
 #include "utils/hwinfo.hpp"
 
-//#define RES_FHD
-#define RES_4K
+#define RES_FHD
+//#define RES_4K
 
 void errorCallback(int errorCode, const char* description);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);

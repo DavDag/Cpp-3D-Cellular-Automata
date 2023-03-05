@@ -98,6 +98,12 @@
     <ClCompile Include="deps\imgui-1.89.3\imgui_tables.cpp" />
     <ClCompile Include="deps\imgui-1.89.3\imgui_widgets.cpp" />
     <ClCompile Include="src\app\app.cpp" />
+    <ClCompile Include="src\app\command.cpp" />
+    <ClCompile Include="src\app\command.hpp" />
+    <ClCompile Include="src\app\commands\command_deps.cpp" />
+    <ClCompile Include="src\app\commands\command_hwinfo.cpp" />
+    <ClCompile Include="src\app\commands\command_sim.cpp" />
+    <ClCompile Include="src\simulation\simulation.cpp" />
     <ClCompile Include="src\utils\hwinfo.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\utils\console.cpp" />
@@ -111,6 +117,11 @@
     <ClInclude Include="deps\imgui-1.89.3\imgui.h" />
     <ClInclude Include="deps\imgui-1.89.3\imgui_internal.h" />
     <ClInclude Include="src\app\app.hpp" />
+    <ClInclude Include="src\app\commands\command_deps.hpp" />
+    <ClInclude Include="src\app\commands\command_hwinfo.hpp" />
+    <ClInclude Include="src\app\commands\command_sim.hpp" />
+    <ClInclude Include="src\simulation\simulation.hpp" />
+    <ClInclude Include="src\utils\crc32.hpp" />
     <ClInclude Include="src\utils\hwinfo.hpp" />
     <ClInclude Include="src\utils\console.hpp" />
     <ClInclude Include="src\utils\usagedisplay.hpp" />
