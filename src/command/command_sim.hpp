@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../command.hpp"
+#include "./command.hpp"
 
 enum class SimCmd { NONE = 0, PAUSE, RESUME, RESET, STEP };
 struct CommandArgsSim: CommandArgs {
@@ -10,7 +10,7 @@ struct CommandArgsSim: CommandArgs {
 
 class CommandSim : public Command {
 public:
-	COMMAND_TYPE()
+	static constexpr crc32 TYPE = COMMAND_UID();
 public:
 	CommandSim();
 	const char* help() override;

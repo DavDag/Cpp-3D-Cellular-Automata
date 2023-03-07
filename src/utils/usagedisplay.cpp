@@ -1,5 +1,5 @@
 #include "usagedisplay.hpp"
-#include "../app/app.hpp"
+#include "../app.hpp"
 #include "hwinfo.hpp"
 
 #include <imgui.h>
@@ -12,6 +12,8 @@ UsageDisplay::UsageDisplay(App& app, float updatePerSec):
 	this->_timeFromLastUpdateSec = 0.0;
 	this->_updateIntervalSec = 1.0 / updatePerSec;
 	//
+	this->_processId = 0;
+	this->_runningCoreInd = 0;
 	this->_fps = 0;
 	this->_memUsagePercentage = 0;
 	this->_memUsageMb = 0;
@@ -25,8 +27,10 @@ UsageDisplay::UsageDisplay(App& app, float updatePerSec):
 	this->_coreCount = hwinfo::cpu::threadCount();
 	this->_cpuUsagePercentagePerCore = new double[_coreCount];
 	memset(this->_cpuUsagePercentagePerCore, 0, sizeof(double) * _coreCount);
-	//
-	this->__initialize();
+}
+
+void UsageDisplay::initialize() {
+
 }
 
 void UsageDisplay::render(int w, int h) {
@@ -39,7 +43,8 @@ void UsageDisplay::render(int w, int h) {
 		| ImGuiWindowFlags_NoFocusOnAppearing;
 	ImGui::Begin("Usage", nullptr, windowFlags);
 	//
-	ImGui::Text("PID: %-8s", hwinfo::extra::pid());
+	ImGui::Text("PID: %-6d", this->_processId);
+	ImGui::Text("Core: #%02d", this->_runningCoreInd);
 	ImGui::Text("Fps: %-6.2f", this->_fps);
 	//
 	ImGui::SeparatorText("RAM");
@@ -59,7 +64,7 @@ void UsageDisplay::render(int w, int h) {
 	const int ncols = (ncores > 8) ? 4 : 2;
 	ImGui::BeginTable("cores", ncols);
 	for (int core = 0; core < ncores; ++core) {
-		float usage = this->_cpuUsagePercentagePerCore[core] / 100.0;
+		float usage = (float)(this->_cpuUsagePercentagePerCore[core] / 100.0f);
 		ImGui::TableNextColumn();
 		//
 		ImGuiIO& io = ImGui::GetIO();
@@ -67,8 +72,12 @@ void UsageDisplay::render(int w, int h) {
 		ImVec2 size = ImGui::CalcTextSize("100%");
 		size.x = ImGui::GetColumnWidth();
 		ImVec2 pos = ImGui::GetCursorScreenPos();
-		ImColor col = IM_COL32(255, 255 * (1.0 - usage), 0, 128);
+		ImColor col = (usage < 0.01) ?
+			IM_COL32(0, 255, 0, 128)
+			: IM_COL32(255, 255 * (1.0 - usage), 0, 128);
 		draw_list->AddRectFilled(pos, ImVec2(pos.x + size.x, pos.y + size.y), col);
+		if (this->_runningCoreInd == core)
+			draw_list->AddRect(pos, ImVec2(pos.x + size.x, pos.y + size.y), IM_COL32_WHITE, 0, 0, 2.0f);
 		//
 		ImGui::Text("%3.0f%%", this->_cpuUsagePercentagePerCore[core]);
 	}
@@ -87,11 +96,11 @@ void UsageDisplay::update(double dtSec) {
 	}
 }
 
-void UsageDisplay::__initialize() {
-
-}
-
 void UsageDisplay::__update() {
+	// Extra
+	this->_processId = hwinfo::extra::pid();
+	this->_runningCoreInd = hwinfo::extra::runningCoreInd();
+
 	// Fps
 	this->_fps = this->_fpsAccumulator / this->_updateIntervalSec;
 	this->_fpsAccumulator = 0;

@@ -6,7 +6,8 @@ namespace hwinfo {
     void exit();
 
     namespace extra {
-        const char* pid();
+        int pid();
+        int runningCoreInd();
     }
 
     namespace opengl {

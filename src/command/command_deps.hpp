@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../command.hpp"
+#include "./command.hpp"
 
 struct CommandArgsDeps: CommandArgs {
 };
 
 class CommandDeps : public Command {
 public:
-	COMMAND_TYPE()
+	static constexpr crc32 TYPE = COMMAND_UID();
 public:
 	CommandDeps();
 	const char* help() override;

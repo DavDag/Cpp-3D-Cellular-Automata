@@ -1,5 +1,5 @@
 #include "console.hpp"
-#include "../app/app.hpp"
+#include "../app.hpp"
 
 #include <stdio.h>
 #include <imgui.h>
@@ -20,13 +20,17 @@ Console::Console(App& app, int rowCount, int rowLenght, bool autowrap):
 	memset(this->_cmdBuffer, '\0', sizeof(char) * _rowLenght);
 }
 
+void Console::initialize() {
+
+}
+
 void Console::update(double dtSec) {
 
 }
 
 void Console::render(int w, int h) {
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(w * 0.3, h), ImGuiCond_Always);
+	ImGui::SetNextWindowSize(ImVec2(w * 0.3f, (float) h), ImGuiCond_Always);
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_NoMove
 		| ImGuiWindowFlags_NoResize
@@ -35,7 +39,7 @@ void Console::render(int w, int h) {
 	ImGui::Begin("Console", nullptr, windowFlags);
 	//
 	ImGui::Checkbox("Autowrap", &this->_autowrap);
-	ImGui::PushItemWidth(w * 0.3);
+	ImGui::PushItemWidth(w * 0.3f);
 	ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_EnterReturnsTrue;
 	if (ImGui::IsWindowAppearing())
 		ImGui::SetKeyboardFocusHere();
@@ -46,7 +50,7 @@ void Console::render(int w, int h) {
 	}
 	ImGui::PopItemWidth();
 	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 2));
-	float wrapPos = (this->_autowrap) ? w * 0.3 : ImGui::GetFontSize() * this->_rowLenght;
+	float wrapPos = (this->_autowrap) ? w * 0.3f : ImGui::GetFontSize() * this->_rowLenght;
 	ImGui::PushTextWrapPos(wrapPos);
 	ImGuiListClipper clipper;
 	clipper.Begin(this->_rowCount, ImGui::GetFontSize());

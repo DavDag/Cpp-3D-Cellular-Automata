@@ -36,14 +36,23 @@ HCOUNTER gpuMemSharedUsageCounter;
 // Extra
 // ====================================
 
-const char* hwinfo::extra::pid() {
+int hwinfo::extra::pid() {
     static bool __computed = false;
-    static char result[8];
+    static int result = 0;
     if (__computed) return result;
     __computed = true;
     //
 #ifdef _WIN32
-    snprintf(result, 8, "%u", currentProcessId);
+    result = currentProcessId;
+#endif // _WIN32
+    return result;
+}
+
+int hwinfo::extra::runningCoreInd() {
+    int result = 0;
+#ifdef _WIN32
+    DWORD pnum = GetCurrentProcessorNumber();
+    result = pnum;
 #endif // _WIN32
     return result;
 }
@@ -135,7 +144,7 @@ double hwinfo::gpu::usage() {
         PdhGetFormattedCounterArray(gpuUsageCounter, PDH_FMT_DOUBLE, &bufferSize, &itemCount, pdhItems);
         if (Status != ERROR_SUCCESS) break;
         percent = 0.0;
-        for (int i = 0; i < itemCount; i++)
+        for (unsigned int i = 0; i < itemCount; i++)
             percent += pdhItems[i].FmtValue.doubleValue;
         //
         break;
@@ -272,7 +281,7 @@ double hwinfo::cpu::usage(double cores[]) {
     NtQuerySystemInformation(SystemProcessorPerformanceInformation, newValues, sizeof(newValues[0]) * hwinfo::cpu::threadCount(), &size);
     double percent = 0.0;
     for (DWORD i = 0; i < hwinfo::cpu::threadCount(); ++i) {
-        double current_percent = (newValues[i].IdleTime.QuadPart - lastValues[i].IdleTime.QuadPart);
+        double current_percent = double(newValues[i].IdleTime.QuadPart - lastValues[i].IdleTime.QuadPart);
         current_percent /= ((newValues[i].KernelTime.QuadPart + newValues[i].UserTime.QuadPart) - (lastValues[i].KernelTime.QuadPart + lastValues[i].UserTime.QuadPart));
         current_percent = 1.0 - current_percent;
         current_percent *= 100.0;

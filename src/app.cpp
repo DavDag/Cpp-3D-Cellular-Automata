@@ -1,12 +1,11 @@
 #include "app.hpp"
-#include "../utils/hwinfo.hpp"
-#include "./commands/command_hwinfo.hpp"
-#include "./commands/command_deps.hpp"
-#include "./commands/command_sim.hpp"
+#include "./utils/hwinfo.hpp"
+#include "./utils/opengl/opengl.hpp"
+#include "./command/command_hwinfo.hpp"
+#include "./command/command_deps.hpp"
+#include "./command/command_sim.hpp"
 
 #include <GLFW/glfw3.h>
-#include <gl/glew.h>
-
 #include <string>
 
 App::App():
@@ -22,6 +21,12 @@ App::App():
 	});
 }
 
+void App::initialize() {
+	this->_console.initialize();
+	this->_display.initialize();
+	this->_simulation.initialize();
+}
+
 void App::update(double dtSec) {
 	this->_console.update(dtSec);
 	this->_display.update(dtSec);
@@ -29,13 +34,14 @@ void App::update(double dtSec) {
 }
 
 void App::render(int w, int h) {
-	glClear(GL_COLOR_BUFFER_BIT);
+	GL_CALL(glEnable(GL_DEPTH_TEST));
+	GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	this->_simulation.render(w, h);
-	//
 	if (this->_showUI) {
 		this->_console.render(w, h);
 		this->_display.render(w, h);
 	}
+	GL_CALL(glDisable(GL_DEPTH_TEST));
 }
 
 void App::onKeyDown(int key) {
@@ -76,7 +82,7 @@ void App::executeCmd(const char* cmd) {
 
 	// Parse cmd, substitute ' ' with '\0'
 	// and "create" a string list.
-	int cmdlen = strlen(cmd);
+	int cmdlen = (int) strlen(cmd);
 	char buffer[512] = { '0' };
 	strncpy_s(buffer, 512, cmd, cmdlen);
 	const int maxArgc = 32;
@@ -94,7 +100,7 @@ void App::executeCmd(const char* cmd) {
 
 	// Search for matching Command
 	bool found = false;
-	for (const auto& command : this->_commands)
+	for (Command* command : this->_commands)
 		if (command->test(args[0])) {
 			CommandArgs* out;
 			if (command->parse(argc, args, out)) {
@@ -113,7 +119,8 @@ void App::executeCmd(const char* cmd) {
 
 void App::execute(int type, CommandArgs* args) {
 	switch (type) {
-		case CommandHwInfo::type: {
+		case CommandHwInfo::TYPE: {
+			CommandArgsHwInfo& nargs = *(CommandArgsHwInfo*)args;
 			this->_console.log(
 				"OpenGL: %s\nGPU: %s | %s\nCPU: %s | %s\nThreads: %d\nRAM: %.2f (GB)",
 				hwinfo::opengl::version(),
@@ -125,7 +132,8 @@ void App::execute(int type, CommandArgs* args) {
 			break;
 		}
 
-		case CommandDeps::type: {
+		case CommandDeps::TYPE: {
+			CommandArgsDeps& nargs = *(CommandArgsDeps*)args;
 			this->_console.log(
 				"GLFW: %s\nGLEW: %s\nIMGUI: %s\nGLM: %s",
 				hwinfo::deps::glfwVersion(),
@@ -136,8 +144,9 @@ void App::execute(int type, CommandArgs* args) {
 			break;
 		}
 
-		case CommandSim::type: {
+		case CommandSim::TYPE: {
 			CommandArgsSim& nargs = *(CommandArgsSim*)args;
+			// TODO
 			this->_console.log(
 				"Simulation %d %d",
 				nargs.type,

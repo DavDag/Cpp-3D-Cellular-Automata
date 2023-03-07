@@ -1,15 +1,17 @@
 #pragma once
 
-#include "../utils/console.hpp"
-#include "../utils/usagedisplay.hpp"
-#include "../simulation/simulation.hpp"
-#include "command.hpp"
+#include "./utils/console.hpp"
+#include "./utils/usagedisplay.hpp"
+#include "./simulation/simulation.hpp"
+#include "./command/command.hpp"
 
 #include <vector>
 
 class App {
 public:
 	App();
+
+	void initialize();
 	void render(int w, int h);
 	void update(double dtSec);
 

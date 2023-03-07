@@ -6,11 +6,11 @@
 #include <backends/imgui_impl_opengl3.h>
 #include <iostream>
 
-#include "app/app.hpp"
-#include "utils/hwinfo.hpp"
+#include "./utils/hwinfo.hpp"
+#include "app.hpp"
 
-#define RES_FHD
-//#define RES_4K
+//#define RES_FHD
+#define RES_4K
 
 void errorCallback(int errorCode, const char* description);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -55,6 +55,8 @@ int main(int argc, char* argv[]) {
         std::cerr << "Error initializing ImGui, <code> = " << err << "\n";
         exit(err);
     }
+
+    app.initialize();
 
     // Main loop
     glfwSwapInterval(1);

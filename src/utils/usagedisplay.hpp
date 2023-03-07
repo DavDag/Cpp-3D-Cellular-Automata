@@ -5,11 +5,12 @@ class App;
 class UsageDisplay {
 public:
 	UsageDisplay(App& app, float updatePerSec);
+	
+	void initialize();
 	void render(int w, int h);
 	void update(double dtSec);
 
 private:
-	void __initialize();
 	void __update();
 
 private:
@@ -18,6 +19,8 @@ private:
 	double _updateIntervalSec;
 	int _fpsAccumulator;
 	//
+	int _processId;
+	int _runningCoreInd;
 	double _fps;
 	double _memUsagePercentage;
 	double _memUsageMb;

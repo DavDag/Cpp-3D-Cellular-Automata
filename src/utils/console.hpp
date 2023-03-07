@@ -5,8 +5,11 @@ class App;
 class Console {
 public:
 	Console(App& app, int rowCount, int rowLenght, bool autowrap);
+
+	void initialize();
 	void update(double dtSec);
 	void render(int w, int h);
+
 	void log(const char* fmt, ...);
 
 private:

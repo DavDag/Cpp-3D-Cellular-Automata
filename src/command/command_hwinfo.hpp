@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../command.hpp"
+#include "./command.hpp"
 
 struct CommandArgsHwInfo: CommandArgs {
 };
 
 class CommandHwInfo : public Command {
 public:
-	COMMAND_TYPE()
+	static constexpr crc32 TYPE = COMMAND_UID();
 public:
 	CommandHwInfo();
 	const char* help() override;
