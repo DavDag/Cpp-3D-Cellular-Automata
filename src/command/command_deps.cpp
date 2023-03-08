@@ -1,12 +1,14 @@
 #include "command_deps.hpp"
 
 CommandDeps::CommandDeps() :
-	Command(CommandDeps::type, "deps", 1, 1)
+	Command(CommandDeps::TYPE, "deps", 1, 1)
 {
 }
 
 const char* CommandDeps::help() {
-	return "<deps>\nShows informations about installed libraries";
+	return R"(<deps>
+Shows informations about installed libraries
+)";
 }
 
 bool CommandDeps::__parse(int argc, const char* args[], CommandArgs*& out) {

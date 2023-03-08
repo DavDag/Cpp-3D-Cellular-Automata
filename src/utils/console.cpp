@@ -41,8 +41,8 @@ void Console::render(int w, int h) {
 	ImGui::Checkbox("Autowrap", &this->_autowrap);
 	ImGui::PushItemWidth(w * 0.3f);
 	ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_EnterReturnsTrue;
-	if (ImGui::IsWindowAppearing())
-		ImGui::SetKeyboardFocusHere();
+	//if (ImGui::IsWindowAppearing())
+	//	ImGui::SetKeyboardFocusHere();
 	if (ImGui::InputText("##cmdline", this->_cmdBuffer, this->_rowLenght, inputFlags)) {
 		this->_app.executeCmd(this->_cmdBuffer);
 		memset(this->_cmdBuffer, '\0', sizeof(char) * this->_rowLenght);
@@ -79,6 +79,7 @@ void Console::render(int w, int h) {
 }
 
 void Console::log(const char* fmt, ...) {
+	// TODO: Colors
 	char* rowBeg = this->_lines[this->_currentRow];
 	memset(rowBeg, '\0', this->_rowLenght);
 	//
@@ -88,4 +89,11 @@ void Console::log(const char* fmt, ...) {
 	va_end(args);
 	//
 	this->_currentRow = (this->_currentRow + 1) % this->_rowCount;
+}
+
+void Console::err(const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	this->log(fmt, args);
+	va_end(args);
 }

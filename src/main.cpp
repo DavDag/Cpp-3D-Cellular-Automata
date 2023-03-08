@@ -121,18 +121,24 @@ void errorCallback(int errorCode, const char* description) {
 }
 
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods) {
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.WantCaptureKeyboard) return;
     App& app = *(App*)glfwGetWindowUserPointer(window);
     if (action == GLFW_PRESS) app.onKeyDown(key);
     if (action == GLFW_RELEASE) app.onKeyUp(key);
 }
 
 void mouseBtnCallback(GLFWwindow* window, int key, int action, int mods) {
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.WantCaptureMouse) return;
     App& app = *(App*)glfwGetWindowUserPointer(window);
     if (action == GLFW_PRESS) app.onMouseBtnDown(key);
     if (action == GLFW_RELEASE) app.onMouseBtnUp(key);
 }
 
 void scrollCallback(GLFWwindow* window, double dx, double dy) {
+    ImGuiIO& io = ImGui::GetIO();
+    if (io.WantCaptureMouse) return;
     App& app = *(App*)glfwGetWindowUserPointer(window);
     app.onMouseWheel(dx, dy);
 }

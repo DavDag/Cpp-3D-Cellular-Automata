@@ -18,7 +18,7 @@ Command::Command(
 void Command::description(char* buffer, int size) {
 	memset(buffer, '\0', size);
 	snprintf(buffer, size,
-		"Type:<%d>\nName:<%s>\nArgs:[%d,%d]",
+		"Type:<%u>\nName:<%s>\nArgs:[%d,%d]",
 		this->type, this->_name, this->_argcMin, this->_argcMax
 	);
 }

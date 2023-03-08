@@ -1,6 +1,10 @@
 #include "simulation.hpp"
 #include "../app.hpp"
 
+struct SimulationCell {
+
+};
+
 Simulation::Simulation(App& app) :
 	_app(app)
 {
@@ -8,6 +12,10 @@ Simulation::Simulation(App& app) :
 	this->_tickSpeedSec = 1.0 / 1; // 1 tick/sec
 	this->_timeSinceLastTickSec = 0;
 	this->_timeAccSec = 0;
+	//
+	this->_seed = 0;
+	this->_side = 8;
+	this->_world = nullptr;
 	//
 	this->_gridVAO = 0;
 	this->_gridVBO = 0;
@@ -17,6 +25,8 @@ Simulation::Simulation(App& app) :
 	this->_cubeInstVBO = 0;
 	this->_cubeInstEBO = 0;
 	this->_cubeInstMatLoc = 0;
+	//
+	this->reset();
 }
 
 void Simulation::initialize() {
@@ -87,14 +97,17 @@ void Simulation::initialize() {
 	const char* cubeInstVShaderSrc = R"(#version 330 core
 	layout (location = 0) in vec3 vPos;
 	uniform mat4 uMat;
+	out vec3 fCol;
 	void main() {
+		fCol = vPos;
 		gl_Position = uMat * vec4(vPos, 1.0f);
 	}
 	)";
 	const char* cubeInstFShaderSrc = R"(#version 330 core
+	in vec3 fCol;
 	out vec4 oCol;
 	void main() {
-		oCol = vec4(1, 0.5, 0.5, 1);
+		oCol = vec4(fCol, 1);
 	}
 	)";
 	//
@@ -131,35 +144,30 @@ void Simulation::update(double dtSec) {
 }
 
 void Simulation::render(int w, int h) {
-	glm::mat4 persp(1.0f), view(1.0f), world(1.0f);
-	persp = glm::perspective<float>(glm::radians(45.0f), (w / (float) h), 0.1f, 100.0f);
-	view = glm::lookAt<float>(glm::vec3(0, 1, -2), glm::vec3(0, 0, 0), glm::vec3(0, 1, 0));
-	world = glm::rotate<float>(world, glm::radians((float) this->_timeAccSec * 45.0f), glm::vec3(0, 1, 0));
-	//
+	const glm::mat4& camera = this->_app.camera();
+	// Grid
 	{
 		this->_gridProgram.bind();
-		glm::mat4 mat = persp * view * world;
+		glm::mat4 grid(1.0f);
+		grid = glm::scale(grid, glm::vec3(this->_side));
+		glm::mat4 mat = camera * grid;
 		GL_CALL(glBindVertexArray(this->_gridVAO));
 		this->_gridProgram.uniformMat4f("uMat", mat);
 		GL_CALL(glDrawElements(GL_LINES, 2 * (4 + 4 + 4), GL_UNSIGNED_INT, NULL));
 		GL_CALL(glBindVertexArray(NULL));
 		this->_gridProgram.unbind();
 	}
-	//
+	// Cubes
 	{
 		this->_cubeInstProgram.bind();
 		glm::mat4 model(1.0f);
-		glm::mat4 mat = persp * view * world * model;
+		glm::mat4 mat = camera * model;
 		GL_CALL(glBindVertexArray(this->_cubeInstVAO));
 		this->_cubeInstProgram.uniformMat4f("uMat", mat);
 		GL_CALL(glDrawElements(GL_TRIANGLES, 3 * (2 * 6), GL_UNSIGNED_INT, NULL));
 		GL_CALL(glBindVertexArray(NULL));
 		this->_cubeInstProgram.unbind();
 	}
-}
-
-void Simulation::reset() {
-	// TODO:
 }
 
 void Simulation::pause() {
@@ -170,9 +178,30 @@ void Simulation::resume() {
 	this->_paused = false;
 }
 
+void Simulation::reset() {
+	// TODO:
+}
+
 void Simulation::step(int count) {
 	for (int i = 0; i < count; ++i)
 		this->__tick();
+}
+
+void Simulation::speed(int tickPerSec) {
+	this->_tickSpeedSec = 1.0 / tickPerSec;
+}
+
+void Simulation::size(int side) {
+	// TODO: inplace update ?
+	// TODO: do not reset boolean parameter ?
+	this->_side = side;
+	this->reset();
+}
+
+void Simulation::seed(int seed) {
+	// TODO: do not reset boolean parameter ?
+	this->_seed = seed;
+	this->reset();
 }
 
 void Simulation::__tick() {

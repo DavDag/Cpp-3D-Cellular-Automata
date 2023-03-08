@@ -100,6 +100,7 @@
     <ClCompile Include="src\app.cpp" />
     <ClCompile Include="src\camera\camera.cpp" />
     <ClCompile Include="src\command\command.cpp" />
+    <ClCompile Include="src\command\command_cam.cpp" />
     <ClCompile Include="src\command\command_deps.cpp" />
     <ClCompile Include="src\command\command_hwinfo.cpp" />
     <ClCompile Include="src\command\command_sim.cpp" />
@@ -122,6 +123,7 @@
     <ClInclude Include="src\app.hpp" />
     <ClInclude Include="src\camera\camera.hpp" />
     <ClInclude Include="src\command\command.hpp" />
+    <ClInclude Include="src\command\command_cam.hpp" />
     <ClInclude Include="src\command\command_deps.hpp" />
     <ClInclude Include="src\command\command_hwinfo.hpp" />
     <ClInclude Include="src\command\command_sim.hpp" />

@@ -1,12 +1,14 @@
 #include "command_hwinfo.hpp"
 
 CommandHwInfo::CommandHwInfo():
-	Command(CommandHwInfo::type, "hwinfo", 1, 1)
+	Command(CommandHwInfo::TYPE, "hwinfo", 1, 1)
 {
 }
 
 const char* CommandHwInfo::help() {
-	return "<hwinfo>\nShows informations about CPU, GPU & others";
+	return R"(<hwinfo>
+Shows informations about: OpenGL, CPU, GPU & RAM
+)";
 }
 
 bool CommandHwInfo::__parse(int argc, const char* args[], CommandArgs*& out) {

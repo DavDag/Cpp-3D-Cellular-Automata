@@ -1,7 +1,7 @@
 #include "command_sim.hpp"
 
 CommandSim::CommandSim():
-	Command(CommandSim::type, "sim", 2, 3)
+	Command(CommandSim::TYPE, "sim", 2, 3)
 {
 	this->_result = {
 		.type = SimCmd::NONE,
@@ -10,14 +10,17 @@ CommandSim::CommandSim():
 }
 
 const char* CommandSim::help() {
-	return "<sim>\n"
-		"Lets you control the simulation.\n"
-		"Valid choices are:\n"
-		"-pause\n"
-		"-resume\n"
-		"-reset\n"
-		"-step <n>"
-		;
+	return R"(<sim>
+Lets you control the simulation.
+Valid choices are:
+-pause
+-resume
+-reset
+-step <count>
+-speed <tickPerSec>
+-size <side>
+-seed <x>
+)";
 }
 
 bool CommandSim::__parse(int argc, const char* args[], CommandArgs*& out) {
