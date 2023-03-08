@@ -9,6 +9,7 @@ struct SimulationCell;
 class Simulation {
 public:
 	Simulation(App& app);
+	int size() const;
 	//
 	void initialize();
 	void update(double dtSec);
@@ -18,9 +19,9 @@ public:
 	void resume();
 	void reset();
 	void step(int count);
-	void speed(int tickPerSec);
-	void size(int side);
-	void seed(int seed);
+	void setspeed(int tickPerSec);
+	void setsize(int side);
+	void setseed(int seed);
 
 private:
 	void __tick();

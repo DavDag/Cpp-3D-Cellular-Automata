@@ -29,6 +29,10 @@ Simulation::Simulation(App& app) :
 	this->reset();
 }
 
+int Simulation::size() const {
+	return this->_side;
+}
+
 void Simulation::initialize() {
 	static float cubeVertices[] = {
 		// Front
@@ -187,18 +191,18 @@ void Simulation::step(int count) {
 		this->__tick();
 }
 
-void Simulation::speed(int tickPerSec) {
+void Simulation::setspeed(int tickPerSec) {
 	this->_tickSpeedSec = 1.0 / tickPerSec;
 }
 
-void Simulation::size(int side) {
+void Simulation::setsize(int side) {
 	// TODO: inplace update ?
 	// TODO: do not reset boolean parameter ?
 	this->_side = side;
 	this->reset();
 }
 
-void Simulation::seed(int seed) {
+void Simulation::setseed(int seed) {
 	// TODO: do not reset boolean parameter ?
 	this->_seed = seed;
 	this->reset();

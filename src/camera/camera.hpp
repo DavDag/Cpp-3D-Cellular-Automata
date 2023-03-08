@@ -8,6 +8,7 @@ public:
 	//
 	const glm::mat4& matrix();
 	void info(char* buff, int buffsize) const;
+	float zoom() const;
 	//
 	void movepos(const glm::vec3& delta);
 	void setpos(const glm::vec3& pos);

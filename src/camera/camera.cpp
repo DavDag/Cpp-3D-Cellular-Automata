@@ -26,12 +26,10 @@ Camera::Camera(float fovy, float near, float far, const glm::vec3& pos, const gl
 
 const glm::mat4& Camera::matrix() {
 	if (this->_dirty) {
-		// To prevent "reverse" effect on camera
-		float fovyWithZoom = glm::min(175.0f, this->_fovy * this->_zoom);
 		// perspective
 		glm::mat4 persp =
 			glm::perspective<float>(
-				glm::radians(fovyWithZoom),
+				glm::radians(this->_fovy),
 				this->_w / (float)this->_h,
 				this->_near, this->_far
 			);
@@ -76,6 +74,10 @@ void Camera::info(char* buff, int buffsize) const {
 		(this->_lockTarget) ? "yes" : "no",
 		this->_target.x, this->_target.y, this->_target.z
 	);
+}
+
+float Camera::zoom() const {
+	return this->_zoom;
 }
 
 void Camera::movepos(const glm::vec3& delta) {

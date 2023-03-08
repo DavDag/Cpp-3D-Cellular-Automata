@@ -34,6 +34,7 @@ private:
 	Console _console;
 	UsageDisplay _display;
 	//
+	int _cameraAngleX, _cameraAngleY;
 	Camera _camera;
 	Simulation _simulation;
 };

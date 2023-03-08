@@ -13,7 +13,7 @@ App::App():
 	_console(*this, 128, 256, false),
 	_display(*this, 1),
 	_simulation(*this),
-	_camera(45.0f, 0.1f, 100.0f, glm::vec3(10.0f, 10.0f, -20.0f), glm::vec3(0.0f))
+	_camera(45.0f, 0.1f, 100.0f, glm::vec3(0, 1, 0), glm::vec3(0.0f))
 {
 	this->_showUI = false;
 	this->_commands = std::vector<Command*>({
@@ -22,6 +22,9 @@ App::App():
 		new CommandSim(),
 		new CommandCam(),
 	});
+	//
+	this->_cameraAngleX = 0;
+	this->_cameraAngleY = 0;
 }
 
 void App::initialize() {
@@ -39,19 +42,71 @@ void App::update(double dtSec) {
 }
 
 void App::render(int w, int h) {
+	///////////////////////////////////////
+	// Camera update
+	glm::vec4 pos(0.0f, 0.0f, -1.0f, 1.0f);
+	glm::mat4 rotX(1.0f), rotY(1.0f);
+	rotX = glm::rotate<float>(rotX, glm::radians((float)this->_cameraAngleX), glm::vec3(0, 1, 0));
+	rotY = glm::rotate<float>(rotY, glm::radians((float)this->_cameraAngleY), glm::vec3(1, 0, 0));
+	pos = (rotX * pos + (rotX * rotY) * pos);
+	pos = glm::normalize(pos);
+	pos *= (1.0f / this->_camera.zoom()) * this->_simulation.size();
+	this->_camera.setpos(pos);
 	this->_camera.setviewport(w, h);
+
+	///////////////////////////////////////
+	// Simulation update
 	GL_CALL(glEnable(GL_DEPTH_TEST));
 	GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	this->_simulation.render(w, h);
+	GL_CALL(glDisable(GL_DEPTH_TEST));
+
+	///////////////////////////////////////
+	// UI
 	if (this->_showUI) {
 		this->_console.render(w, h);
 		this->_display.render(w, h);
 	}
-	GL_CALL(glDisable(GL_DEPTH_TEST));
 }
 
 void App::onKeyDown(int key) {
-	if (key == GLFW_KEY_TAB) this->_showUI = !this->_showUI;
+	switch (key) {
+		case GLFW_KEY_TAB: {
+			this->_showUI = !this->_showUI;
+			break;
+		}
+
+		case GLFW_KEY_A:
+		case GLFW_KEY_LEFT: {
+			this->_cameraAngleX -= 5;
+			this->_cameraAngleX %= 360;
+			break;
+		}
+		
+		case GLFW_KEY_D:
+		case GLFW_KEY_RIGHT: {
+			this->_cameraAngleX += 5;
+			this->_cameraAngleX %= 360;
+			break;
+		}
+
+		case GLFW_KEY_S:
+		case GLFW_KEY_DOWN: {
+			this->_cameraAngleY -= 5;
+			this->_cameraAngleY = glm::max(this->_cameraAngleY, -90);
+			break;
+		}
+
+		case GLFW_KEY_W:
+		case GLFW_KEY_UP: {
+			this->_cameraAngleY += 5;
+			this->_cameraAngleY = glm::min(this->_cameraAngleY, 90);
+			break;
+		}
+
+		default:
+			break;
+	}
 }
 
 void App::onKeyUp(int key) {
@@ -67,7 +122,7 @@ void App::onMouseBtnUp(int btn) {
 }
 
 void App::onMouseWheel(double dx, double dy) {
-	this->_camera.movezoomPercentage(-0.1f * dy); // 10%
+	this->_camera.movezoomPercentage(0.1f * (float) dy); // 10%
 }
 
 void App::onResize(int width, int height) {

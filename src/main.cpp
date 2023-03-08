@@ -126,6 +126,7 @@ void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods
     App& app = *(App*)glfwGetWindowUserPointer(window);
     if (action == GLFW_PRESS) app.onKeyDown(key);
     if (action == GLFW_RELEASE) app.onKeyUp(key);
+    if (action == GLFW_REPEAT) app.onKeyDown(key); // TODO: Improve ?
 }
 
 void mouseBtnCallback(GLFWwindow* window, int key, int action, int mods) {
