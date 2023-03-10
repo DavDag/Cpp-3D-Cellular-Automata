@@ -1,10 +1,13 @@
 #include "camera.hpp"
+#include "../app.hpp"
 
 #include <glm/gtc/matrix_transform.hpp>
 
 static glm::vec3 v3fZero = glm::vec3(0.0f);
 
-Camera::Camera(float fovy, float near, float far, const glm::vec3& pos, const glm::vec3& dir) {
+Camera::Camera(App& app, float fovy, float near, float far, const glm::vec3& pos, const glm::vec3& dir):
+	_app(app)
+{
 	this->_fovy = fovy;
 	this->_w = 0;
 	this->_h = 0;
@@ -53,8 +56,8 @@ const glm::mat4& Camera::matrix() {
 	return this->_matrix;
 }
 
-void Camera::info(char* buff, int buffsize) const {
-	sprintf_s(buff, buffsize,
+void Camera::info() const {
+	this->_app.inf(
 		"FOVY: %.2f deg\n"
 		"Viewport: [%dx%d] px\n"
 		"Planes: %.2f (near) %.2f (far)\n"

@@ -3,10 +3,40 @@
 #include "world.hpp"
 #include "../utils/opengl/opengl.hpp"
 
+#include <unordered_set>
+
 class App;
 
-struct SimulationCellData {
+struct SimCellData {
 	int status;
+};
+
+struct GLSimCellData {
+	union {
+		struct {
+			GLubyte x;
+			GLubyte y;
+			GLubyte z;
+			GLubyte _;
+		};
+		GLuint all;
+	} coords;
+	union {
+		struct {
+			GLubyte r;
+			GLubyte g;
+			GLubyte b;
+			GLubyte _;
+		};
+		GLuint all;
+	} color;
+};
+
+struct SimRule {
+	std::unordered_set<int> aliveWith;
+	std::unordered_set<int> bornWith;
+	int stateCount;
+	enum Method { NEUMANN = 1, MOORE = 2 } method;
 };
 
 class Simulation {
@@ -37,16 +67,13 @@ private:
 	double _tickSpeedSec;
 	double _timeAccSec;
 	//
+	SimRule _rule;
 	int _seed;
-	int _side;
-	World<SimulationCellData> _world;
+	World<SimCellData> _world;
 	int _cellsToDrawCount;
-	GLuint* _cellsToDrawList;
+	GLSimCellData* _cellsToDrawList;
 	//
 	GLProgram _gridProgram, _cubeInstProgram;
 	GLuint _gridVAO, _cubeInstVAO;
-	GLuint _gridVBO, _cubeInstVBO;
 	GLuint _cubeInstVBO2;
-	GLuint _gridEBO, _cubeInstEBO;
-	GLuint _gridMatLoc, _cubeInstMatLoc;
 };

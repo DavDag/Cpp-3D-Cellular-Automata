@@ -26,10 +26,12 @@ void exitGLFW(GLFWwindow*& window);
 void exitGLEW();
 void exitImGui();
 
-int main(int argc, char* argv[]);
-int WinMain(int argc, char* argv[]) { return main(argc, argv); }
-
-int main(int argc, char* argv[]) {
+#if defined(_CONSOLE)
+int main(int argc, char* argv[])
+#elif defined(_WIN32)
+int WinMain(int argc, char* argv[])
+#endif
+{
     hwinfo::init();
     atexit(hwinfo::exit);
 
@@ -42,7 +44,7 @@ int main(int argc, char* argv[]) {
     App app;
 
     // Init
-    GLFWwindow* window;
+    GLFWwindow* window = nullptr;
     if (int err = initGLFW(window, w, h, app); err != 0) {
         std::cerr << "Error initializing GLFW, <code> = " << err << "\n";
         exit(err);

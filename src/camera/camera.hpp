@@ -2,12 +2,14 @@
 
 #include <glm/glm.hpp>
 
+class App;
+
 class Camera {
 public:
-	Camera(float fovy, float near, float far, const glm::vec3& pos, const glm::vec3& dir);
+	Camera(App& app, float fovy, float near, float far, const glm::vec3& pos, const glm::vec3& dir);
 	//
 	const glm::mat4& matrix();
-	void info(char* buff, int buffsize) const;
+	void info() const;
 	float zoom() const;
 	//
 	void movepos(const glm::vec3& delta);
@@ -27,6 +29,8 @@ public:
 	void unlocktarget();
 
 private:
+	App& _app;
+	//
 	float _fovy;
 	int _w, _h;
 	float _near, _far;

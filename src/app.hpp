@@ -6,6 +6,7 @@
 #include "./camera/camera.hpp"
 #include "./simulation/simulation.hpp"
 
+#include <imgui.h>
 #include <vector>
 
 class App {
@@ -25,8 +26,16 @@ public:
 	void onMouseWheel(double dx, double dy);
 	void onResize(int w, int h);
 	//
-	void executeCmd(const char* cmd);
+	void parse(const char* cmd);
 	void execute(int type, CommandArgs* args);
+	//
+	void raw(const char* fmt, ...);
+	void inf(const char* fmt, ...);
+	void deb(const char* fmt, ...);
+	void err(const char* fmt, ...);
+
+private:
+	void __log(ImU32 col, const char* fmt, va_list args);
 
 private:
 	bool _showUI;

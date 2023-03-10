@@ -15,6 +15,7 @@ private:
 
 private:
 	App& _app;
+	//
 	double _timeFromLastUpdateSec;
 	double _updateIntervalSec;
 	int _fpsAccumulator;

@@ -27,7 +27,7 @@ namespace hwinfo {
     }
 
     namespace cpu {
-        int threadCount();
+        unsigned int threadCount();
         const char* vendor();
         const char* brand();
         double usage(double cores[]);

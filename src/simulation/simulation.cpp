@@ -1,34 +1,36 @@
 #include "simulation.hpp"
 #include "../app.hpp"
 
+#include <random>
+
 Simulation::Simulation(App& app) :
 	_app(app)
 {
 	this->_paused = false;
-	this->_tickSpeedSec = 1.0 / 1; // 1 tick/sec
+	this->_tickSpeedSec = 1.0 / 2; // tick/sec
 	this->_timeSinceLastTickSec = 0;
 	this->_timeAccSec = 0;
 	//
+	this->_rule = SimRule{
+		.aliveWith = { 4 },
+		.bornWith = { 4 },
+		.stateCount = 5,
+		.method = SimRule::Method::MOORE
+	};
 	this->_seed = 0;
-	this->_side = 8;
-	this->_world = World<SimulationCellData>(this->_side);
+	this->_world = World<SimCellData>(8, {.status=0});
 	this->_cellsToDrawCount = 0;
-	this->_cellsToDrawList = new GLuint[this->_world.size()];
+	this->_cellsToDrawList = new GLSimCellData[this->_world.size()];
 	//
 	this->_gridVAO = 0;
-	this->_gridVBO = 0;
-	this->_gridEBO = 0;
-	this->_gridMatLoc = 0;
 	this->_cubeInstVAO = 0;
-	this->_cubeInstVBO = 0;
-	this->_cubeInstEBO = 0;
-	this->_cubeInstMatLoc = 0;
+	this->_cubeInstVBO2 = 0;
 	//
 	this->reset();
 }
 
 int Simulation::size() const {
-	return this->_side;
+	return this->_world.side();
 }
 
 void Simulation::initialize() {
@@ -54,7 +56,7 @@ void Simulation::initialize() {
 		4, 5, 6, 6, 7, 4, // back
 		5, 1, 2, 2, 6, 5, // top
 		3, 7, 6, 6, 2, 3, // right
- 		0, 4, 7, 7, 3, 0, // bottom
+		0, 4, 7, 7, 3, 0, // bottom
 		0, 1, 5, 5, 4, 0, // left
 	};
 
@@ -79,40 +81,38 @@ void Simulation::initialize() {
 		GLShader::fromSrc("gridVertShader", gridVShaderSrc, GL_VERTEX_SHADER),
 		GLShader::fromSrc("gridFragShader", gridFShaderSrc, GL_FRAGMENT_SHADER)
 	);
-	GL_CALL(this->_gridMatLoc = glGetUniformLocation(this->_gridProgram.id(), "uMat"));
+	GLuint tmpvbo, tmpebo;
 	GL_CALL(glGenVertexArrays(1, &this->_gridVAO));
-	GL_CALL(glGenBuffers(1, &this->_gridVBO));
-	GL_CALL(glGenBuffers(1, &this->_gridEBO));
-	// 
+	GL_CALL(glGenBuffers(1, &tmpvbo));
+	GL_CALL(glGenBuffers(1, &tmpebo));
+	//
 	GL_CALL(glBindVertexArray(this->_gridVAO));
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_gridVBO));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, tmpvbo));
 	GL_CALL(glEnableVertexAttribArray(0)); // Associate attr <-> buffer (& store it in the VAO)
-	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL)); // can be unbound
-	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_gridEBO)); // Associate index buffer (& store it in the VAO)
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tmpebo)); // Associate index buffer (& store it in the VAO)
 	GL_CALL(glBindVertexArray(NULL));
 	//
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_gridVBO));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, tmpvbo));
 	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
-	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_gridEBO));
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tmpebo));
 	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gridIndices), gridIndices, GL_STATIC_DRAW));
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL));
 
 	// ================================
 	// Cube
 	const char* cubeInstVShaderSrc = R"(#version 450 core
-	layout (location = 0) in uint vIndex;
-	layout (location = 1) in vec3 vPos;
+	layout (location = 0) in vec3 vPos;
+	layout (location = 1) in uvec3 vCoords;
+	layout (location = 2) in vec3 vCol;
 	uniform uint uWorldSide;
 	uniform mat4 uMat;
 	out vec3 fCol;
 	void main() {
-		uint dz = (vIndex) % uWorldSide;
-		uint dy = (vIndex / uWorldSide) % uWorldSide;
-		uint dx = (vIndex / uWorldSide / uWorldSide) % uWorldSide;
-		fCol = vec3(dx, dy, dz) / float(uWorldSide);
-		gl_Position = uMat * vec4(vPos + vec3(dx, dy, dz), 1.0f);
+		fCol = vCol;
+		gl_Position = uMat * vec4(vPos + vCoords, 1.0f);
 	}
 	)";
 	const char* cubeInstFShaderSrc = R"(#version 450 core
@@ -128,32 +128,34 @@ void Simulation::initialize() {
 		GLShader::fromSrc("cubeInstVertShader", cubeInstVShaderSrc, GL_VERTEX_SHADER),
 		GLShader::fromSrc("cubeInstFragShader", cubeInstFShaderSrc, GL_FRAGMENT_SHADER)
 	);
-	GL_CALL(this->_cubeInstMatLoc = glGetUniformLocation(this->_cubeInstProgram.id(), "uMat"));
 	GL_CALL(glGenVertexArrays(1, &this->_cubeInstVAO));
-	GL_CALL(glGenBuffers(1, &this->_cubeInstVBO));
+	GL_CALL(glGenBuffers(1, &tmpvbo));
 	GL_CALL(glGenBuffers(1, &this->_cubeInstVBO2));
-	GL_CALL(glGenBuffers(1, &this->_cubeInstEBO));
+	GL_CALL(glGenBuffers(1, &tmpebo));
 	//
 	GL_CALL(glBindVertexArray(this->_cubeInstVAO));
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO2));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, tmpvbo));
 	GL_CALL(glEnableVertexAttribArray(0));  // Associate attr <-> buffer (& store it in the VAO)
-	GL_CALL(glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 0, (void*)0));
-	GL_CALL(glVertexAttribDivisor(0, 1));
+	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL)); // can be unbound
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO2));
 	GL_CALL(glEnableVertexAttribArray(1));  // Associate attr <-> buffer (& store it in the VAO)
-	GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+	GL_CALL(glVertexAttribIPointer(1, 3, GL_UNSIGNED_BYTE, sizeof(GLSimCellData), (void*)offsetof(GLSimCellData, coords)));
+	GL_CALL(glVertexAttribDivisor(1, 1));
+	GL_CALL(glEnableVertexAttribArray(2));  // Associate attr <-> buffer (& store it in the VAO)
+	GL_CALL(glVertexAttribPointer(2, 3, GL_UNSIGNED_BYTE, GL_TRUE, sizeof(GLSimCellData), (void*)offsetof(GLSimCellData, color)));
+	GL_CALL(glVertexAttribDivisor(2, 1));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL)); // can be unbound
-	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_cubeInstEBO)); // Associate index buffer (& store it in the VAO)
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tmpebo)); // Associate index buffer (& store it in the VAO)
 	GL_CALL(glBindVertexArray(NULL));
 	//
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO2));
-	GL_CALL(glBufferData(GL_ARRAY_BUFFER, this->_world.size() * sizeof(GLuint), NULL, GL_DYNAMIC_DRAW));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, this->_world.size() * 4 * sizeof(GLubyte), NULL, GL_DYNAMIC_DRAW));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
-	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, tmpvbo));
 	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
-	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_cubeInstEBO));
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, tmpebo));
 	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW));
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL));
 }
@@ -174,7 +176,7 @@ void Simulation::render(int w, int h) {
 	// Grid
 	{
 		glm::mat4 grid(1.0f);
-		grid = glm::scale(grid, glm::vec3(this->_side));
+		grid = glm::scale(grid, glm::vec3(float(this->_world.side())));
 		glm::mat4 mat = camera * grid;
 		//
 		this->_gridProgram.bind();
@@ -186,16 +188,33 @@ void Simulation::render(int w, int h) {
 	}
 	// Cubes
 	{
-		this->_cellsToDrawCount = this->_world.size();
-		for (GLuint i = 0; i < this->_cellsToDrawCount; ++i)
-			this->_cellsToDrawList[i] = i;
+		const int ws = this->_world.side();
+		const int maxstatus = this->_rule.stateCount - 1;
+		this->_cellsToDrawCount = 0;
+		for (int ci = 0; ci < this->_world.size(); ++ci) {
+			SimCellData worldcelldata = this->_world.get(ci);
+			if (worldcelldata.status != 0) {
+				float decay = worldcelldata.status / (float) maxstatus;
+				GLSimCellData glcelldata = { 0 };
+				// glcelldata.coords.all = ci; // reversed
+				glcelldata.coords.x = (ci / ws / ws) % ws;
+				glcelldata.coords.y = (ci / ws) % ws;
+				glcelldata.coords.z = (ci) % ws;
+				glcelldata.coords._ = 0;
+				glcelldata.color.r = (GLubyte)(0xff * decay);
+				glcelldata.color.g = 0;
+				glcelldata.color.b = 0;
+				glcelldata.color._ = 0;
+				this->_cellsToDrawList[this->_cellsToDrawCount++] = glcelldata;
+			}
+		}
 		GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO2));
-		GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, this->_cellsToDrawCount * sizeof(GLuint), this->_cellsToDrawList));
+		GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, this->_cellsToDrawCount * sizeof(GLSimCellData), this->_cellsToDrawList));
 		GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
 		//
 		this->_cubeInstProgram.bind();
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(this->_world.side()) * -0.5f);
+		model = glm::translate(model, glm::vec3(float(this->_world.side())) * -0.5f);
 		model = glm::translate(model, glm::vec3(0.5f));
 		glm::mat4 mat = camera * model;
 		//
@@ -217,11 +236,28 @@ void Simulation::resume() {
 }
 
 void Simulation::reset() {
-	delete[] this->_cellsToDrawList;
 	//
-	this->_world = World<SimulationCellData>(this->_side);
-	this->_cellsToDrawCount = 0;
-	this->_cellsToDrawList = new GLuint[this->_world.size()];
+	SimCellData emptydata = {
+		.status = 0
+	};
+	for (int i = 0; i < this->_world.size(); ++i)
+		this->_world.set(emptydata, i);
+	//
+	std::mt19937 gen;
+	std::uniform_int_distribution<int> distr(0, this->_rule.stateCount - 1);
+	const float cen = this->_world.side() / 2.0f;
+	const float off = 2.0f;
+	for (float dx = -off; dx < +off; dx += 1.0f)
+		for (float dy = -off; dy < +off; dy += 1.0f)
+			for (float dz = -off; dz < +off; dz += 1.0f) {
+				SimCellData data = {
+					.status = distr(gen)
+				};
+				int x = (int) round(cen + dx);
+				int y = (int) round(cen + dy);
+				int z = (int) round(cen + dz);
+				this->_world.set(data, x, y, z);
+			}
 }
 
 void Simulation::step(int count) {
@@ -236,7 +272,12 @@ void Simulation::setspeed(int tickPerSec) {
 void Simulation::setsize(int side) {
 	// TODO: inplace update ?
 	// TODO: do not reset boolean parameter ?
-	this->_side = side;
+	this->_world = World<SimCellData>(this->_world.side(), {.status = 0});
+	//
+	delete[] this->_cellsToDrawList;
+	this->_cellsToDrawCount = 0;
+	this->_cellsToDrawList = new GLSimCellData[this->_world.size()];
+	//
 	this->reset();
 }
 
@@ -247,5 +288,35 @@ void Simulation::setseed(int seed) {
 }
 
 void Simulation::__tick() {
-	// TODO:
+	const int ws = this->_world.side();
+	const int initialstate = this->_rule.stateCount - 1;
+	for (int x = 0; x < ws; ++x)
+		for (int y = 0; y < ws; ++y)
+			for (int z = 0; z < ws; ++z) {
+				SimCellData data = this->_world.get(x, y, z);
+				//
+				int neighbours = (data.status == initialstate) ? -1 : 0;
+				for (int dx = -1; dx <= 1; ++dx)
+					for (int dy = -1; dy <= 1; ++dy)
+						for (int dz = -1; dz <= 1; ++dz)
+							if (this->_world.get(x + dx, y + dy, z + dz).status == initialstate)
+								++neighbours;
+				//
+				if (data.status == initialstate) {
+					// alive
+					if (this->_rule.aliveWith.contains(neighbours))
+						continue;
+					data.status = initialstate - 1;
+				}
+				else if (data.status == 0) {
+					// born
+					if (this->_rule.bornWith.contains(neighbours))
+						data.status = initialstate;
+				}
+				else {
+					// decrement
+					data.status = data.status - 1;
+				}
+				this->_world.set(data, x, y, z);
+			}
 }

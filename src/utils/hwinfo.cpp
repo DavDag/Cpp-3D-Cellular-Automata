@@ -200,7 +200,7 @@ double hwinfo::gpu::physicalTotMb() {
 // CPU
 // ====================================
 
-int hwinfo::cpu::threadCount() {
+unsigned int hwinfo::cpu::threadCount() {
     static bool __computed = false;
     static int result;
     if (__computed) return result;

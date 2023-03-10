@@ -6,14 +6,16 @@
 #include "./command/command_sim.hpp"
 #include "./command/command_cam.hpp"
 
+#include <imgui.h>
 #include <GLFW/glfw3.h>
+#include <stdarg.h>
 #include <string>
 
 App::App():
-	_console(*this, 128, 256, false),
+	_console(*this, 256, 4096, false),
 	_display(*this, 1),
 	_simulation(*this),
-	_camera(45.0f, 0.1f, 1000.0f, glm::vec3(0, 1, 0), glm::vec3(0.0f))
+	_camera(*this, 45.0f, 0.1f, 1000.0f, glm::vec3(0, 1, 0), glm::vec3(0.0f))
 {
 	this->_showUI = false;
 	this->_commands = std::vector<Command*>({
@@ -132,14 +134,17 @@ void App::onResize(int width, int height) {
 	this->_camera.setviewport(width, height);
 }
 
-void App::executeCmd(const char* cmd) {
-	this->_console.log(cmd);
+void App::parse(const char* cmd) {
+	this->raw(cmd);
+	this->inf(cmd);
+	this->deb(cmd);
+	this->err(cmd);
 
 	if (strcmp(cmd, "help") == 0) {
 		char buffer[128];
 		for (const auto& c : this->_commands) {
 			c->description(buffer, 128);
-			this->_console.log(buffer);
+			this->inf(buffer);
 		}
 		return;
 	}
@@ -171,13 +176,13 @@ void App::executeCmd(const char* cmd) {
 				this->execute(command->type, out);
 			}
 			else {
-				this->_console.log(command->help());
+				this->inf(command->help());
 			}
 			found = true;
 			break;
 		}
 	if (!found) {
-		this->_console.log("Unrecognized command.\nType 'help' to get available commands");
+		this->err("Unrecognized command.\nType 'help' to get available commands");
 	}
 }
 
@@ -185,7 +190,7 @@ void App::execute(int type, CommandArgs* args) {
 	switch (type) {
 		case CommandHwInfo::TYPE: {
 			CommandArgsHwInfo& nargs = *(CommandArgsHwInfo*)args;
-			this->_console.log(
+			this->inf(
 				"OpenGL: %s\nGPU: %s | %s\nCPU: %s | %s\nThreads: %d\nRAM: %.2f (GB)",
 				hwinfo::opengl::version(),
 				hwinfo::gpu::vendor(), hwinfo::gpu::renderer(),
@@ -198,7 +203,7 @@ void App::execute(int type, CommandArgs* args) {
 
 		case CommandDeps::TYPE: {
 			CommandArgsDeps& nargs = *(CommandArgsDeps*)args;
-			this->_console.log(
+			this->inf(
 				"GLFW: %s\nGLEW: %s\nIMGUI: %s\nGLM: %s",
 				hwinfo::deps::glfwVersion(),
 				hwinfo::deps::glewVersion(),
@@ -210,12 +215,29 @@ void App::execute(int type, CommandArgs* args) {
 
 		case CommandSim::TYPE: {
 			CommandArgsSim& nargs = *(CommandArgsSim*)args;
-			// TODO
-			this->_console.log(
-				"Simulation %d %d",
-				nargs.type,
-				nargs.stepCount
-			);
+			switch (nargs.type) {
+				case SimCmd::PAUSE:
+					this->_simulation.pause();
+					break;
+
+				case SimCmd::RESUME:
+					this->_simulation.resume();
+					break;
+
+				case SimCmd::RESET:
+					this->_simulation.reset();
+					break;
+
+				case SimCmd::STEP:
+					this->_simulation.step(nargs.stepCount);
+					break;
+
+				case SimCmd::NONE:
+				default:
+					// Should never happpen
+					this->err("invalid cmd subtype!");
+					break;
+			}
 			break;
 		}
 
@@ -223,16 +245,14 @@ void App::execute(int type, CommandArgs* args) {
 			CommandArgsCam& nargs = *(CommandArgsCam*)args;
 			switch (nargs.type) {
 				case CamCmd::INFO: {
-					char buffer[512];
-					this->_camera.info(buffer, 512);
-					this->_console.log("%s", buffer);
+					this->_camera.info();
 					break;
 				}
 
 				case CamCmd::NONE:
 				default:
-					this->_console.err("[error] invalid cmd subtype!");
 					// Should never happpen
+					this->err("[error] invalid cmd subtype!");
 					break;
 			}
 			break;
@@ -240,8 +260,8 @@ void App::execute(int type, CommandArgs* args) {
 
 		case 0:
 		default:
-			this->_console.err("[error] invalid cmd type!");
 			// Should never happpen
+			this->err("[error] invalid cmd type!");
 			break;
 	}
 
@@ -250,4 +270,39 @@ void App::execute(int type, CommandArgs* args) {
 
 const glm::mat4& App::camera() {
 	return this->_camera.matrix();
+}
+
+void App::raw(const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	this->__log(IM_COL32(192, 192, 192, 255), fmt, args);
+	va_end(args);
+}
+
+void App::inf(const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	this->__log(IM_COL32(255, 255, 255, 255), fmt, args);
+	va_end(args);
+}
+
+void App::deb(const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	this->__log(IM_COL32(128, 128, 128, 255), fmt, args);
+	va_end(args);
+}
+
+void App::err(const char* fmt, ...) {
+	va_list args;
+	va_start(args, fmt);
+	this->__log(IM_COL32(255, 0, 0, 255), fmt, args);
+	va_end(args);
+}
+
+void App::__log(ImU32 col, const char* fmt, va_list args) {
+	char buff[4096];
+	memset(buff, '\0', 4096);
+	vsprintf_s(buff, fmt, args);
+	this->_console.log(col, buff);
 }
