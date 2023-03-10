@@ -24,7 +24,8 @@ public:
 	void bind();
 	void unbind();
 	//
-	void uniformMat4f(GLUniformName name, const glm::mat4& mat);
+	void uniform1u(GLUniformName name, unsigned int value);
+	void uniformMat4f(GLUniformName name, const glm::mat4& value);
 
 public:
 	static GLProgram fromShaders(const char* name, const GLShader& vertex, const GLShader& fragment);

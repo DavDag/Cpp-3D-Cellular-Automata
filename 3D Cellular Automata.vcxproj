@@ -128,6 +128,7 @@
     <ClInclude Include="src\command\command_hwinfo.hpp" />
     <ClInclude Include="src\command\command_sim.hpp" />
     <ClInclude Include="src\simulation\simulation.hpp" />
+    <ClInclude Include="src\simulation\world.hpp" />
     <ClInclude Include="src\utils\console.hpp" />
     <ClInclude Include="src\utils\crc32.hpp" />
     <ClInclude Include="src\utils\hwinfo.hpp" />

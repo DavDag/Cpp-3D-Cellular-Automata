@@ -1,10 +1,6 @@
 #include "simulation.hpp"
 #include "../app.hpp"
 
-struct SimulationCell {
-
-};
-
 Simulation::Simulation(App& app) :
 	_app(app)
 {
@@ -15,7 +11,9 @@ Simulation::Simulation(App& app) :
 	//
 	this->_seed = 0;
 	this->_side = 8;
-	this->_world = nullptr;
+	this->_world = World<SimulationCellData>(this->_side);
+	this->_cellsToDrawCount = 0;
+	this->_cellsToDrawList = new GLuint[this->_world.size()];
 	//
 	this->_gridVAO = 0;
 	this->_gridVBO = 0;
@@ -46,16 +44,16 @@ void Simulation::initialize() {
 		-0.5,  0.5,  0.5, // 6: TR
 		-0.5, -0.5,  0.5, // 7: BR
 	};
-	static int gridIndices[] = {
+	static GLuint gridIndices[] = {
 		0, 1, 1, 2, 2, 3, 3, 0, // front
 		4, 5, 5, 6, 6, 7, 7, 4, // back
 		0, 4, 1, 5, 2, 6, 3, 7, // 4 connecting lines
 	};
-	static int cubeIndices[] = {
-		0, 1, 2, 2, 3, 0, // front
+	static GLuint cubeIndices[] = {
+		2, 1, 0, 0, 3, 2, // front
 		4, 5, 6, 6, 7, 4, // back
-		2, 1, 5, 5, 6, 2, // top
-		6, 7, 3, 3, 2, 6, // right
+		5, 1, 2, 2, 6, 5, // top
+		3, 7, 6, 6, 2, 3, // right
  		0, 4, 7, 7, 3, 0, // bottom
 		0, 1, 5, 5, 4, 0, // left
 	};
@@ -85,29 +83,39 @@ void Simulation::initialize() {
 	GL_CALL(glGenVertexArrays(1, &this->_gridVAO));
 	GL_CALL(glGenBuffers(1, &this->_gridVBO));
 	GL_CALL(glGenBuffers(1, &this->_gridEBO));
+	// 
 	GL_CALL(glBindVertexArray(this->_gridVAO));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_gridVBO));
+	GL_CALL(glEnableVertexAttribArray(0)); // Associate attr <-> buffer (& store it in the VAO)
+	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL)); // can be unbound
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_gridEBO)); // Associate index buffer (& store it in the VAO)
+	GL_CALL(glBindVertexArray(NULL));
+	//
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_gridVBO));
 	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_gridEBO));
 	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(gridIndices), gridIndices, GL_STATIC_DRAW));
-	GL_CALL(glEnableVertexAttribArray(0));
-	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0));
-	//GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL));
-	//GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
-	GL_CALL(glBindVertexArray(NULL));
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL));
 
 	// ================================
 	// Cube
-	const char* cubeInstVShaderSrc = R"(#version 330 core
-	layout (location = 0) in vec3 vPos;
+	const char* cubeInstVShaderSrc = R"(#version 450 core
+	layout (location = 0) in uint vIndex;
+	layout (location = 1) in vec3 vPos;
+	uniform uint uWorldSide;
 	uniform mat4 uMat;
 	out vec3 fCol;
 	void main() {
-		fCol = vPos;
-		gl_Position = uMat * vec4(vPos, 1.0f);
+		uint dz = (vIndex) % uWorldSide;
+		uint dy = (vIndex / uWorldSide) % uWorldSide;
+		uint dx = (vIndex / uWorldSide / uWorldSide) % uWorldSide;
+		fCol = vec3(dx, dy, dz) / float(uWorldSide);
+		gl_Position = uMat * vec4(vPos + vec3(dx, dy, dz), 1.0f);
 	}
 	)";
-	const char* cubeInstFShaderSrc = R"(#version 330 core
+	const char* cubeInstFShaderSrc = R"(#version 450 core
 	in vec3 fCol;
 	out vec4 oCol;
 	void main() {
@@ -123,17 +131,31 @@ void Simulation::initialize() {
 	GL_CALL(this->_cubeInstMatLoc = glGetUniformLocation(this->_cubeInstProgram.id(), "uMat"));
 	GL_CALL(glGenVertexArrays(1, &this->_cubeInstVAO));
 	GL_CALL(glGenBuffers(1, &this->_cubeInstVBO));
+	GL_CALL(glGenBuffers(1, &this->_cubeInstVBO2));
 	GL_CALL(glGenBuffers(1, &this->_cubeInstEBO));
+	//
 	GL_CALL(glBindVertexArray(this->_cubeInstVAO));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO2));
+	GL_CALL(glEnableVertexAttribArray(0));  // Associate attr <-> buffer (& store it in the VAO)
+	GL_CALL(glVertexAttribIPointer(0, 1, GL_UNSIGNED_INT, 0, (void*)0));
+	GL_CALL(glVertexAttribDivisor(0, 1));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL)); // can be unbound
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO));
+	GL_CALL(glEnableVertexAttribArray(1));  // Associate attr <-> buffer (& store it in the VAO)
+	GL_CALL(glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, (void*)0));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL)); // can be unbound
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_cubeInstEBO)); // Associate index buffer (& store it in the VAO)
+	GL_CALL(glBindVertexArray(NULL));
+	//
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO2));
+	GL_CALL(glBufferData(GL_ARRAY_BUFFER, this->_world.size() * sizeof(GLuint), NULL, GL_DYNAMIC_DRAW));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
 	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO));
 	GL_CALL(glBufferData(GL_ARRAY_BUFFER, sizeof(cubeVertices), cubeVertices, GL_STATIC_DRAW));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
 	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->_cubeInstEBO));
 	GL_CALL(glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(cubeIndices), cubeIndices, GL_STATIC_DRAW));
-	GL_CALL(glEnableVertexAttribArray(0));
-	GL_CALL(glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0));
-	//GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL));
-	//GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
-	GL_CALL(glBindVertexArray(NULL));
+	GL_CALL(glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, NULL));
 }
 
 void Simulation::update(double dtSec) {
@@ -151,24 +173,36 @@ void Simulation::render(int w, int h) {
 	const glm::mat4& camera = this->_app.camera();
 	// Grid
 	{
-		this->_gridProgram.bind();
 		glm::mat4 grid(1.0f);
 		grid = glm::scale(grid, glm::vec3(this->_side));
 		glm::mat4 mat = camera * grid;
-		GL_CALL(glBindVertexArray(this->_gridVAO));
+		//
+		this->_gridProgram.bind();
 		this->_gridProgram.uniformMat4f("uMat", mat);
+		GL_CALL(glBindVertexArray(this->_gridVAO));
 		GL_CALL(glDrawElements(GL_LINES, 2 * (4 + 4 + 4), GL_UNSIGNED_INT, NULL));
 		GL_CALL(glBindVertexArray(NULL));
 		this->_gridProgram.unbind();
 	}
 	// Cubes
 	{
+		this->_cellsToDrawCount = this->_world.size();
+		for (GLuint i = 0; i < this->_cellsToDrawCount; ++i)
+			this->_cellsToDrawList[i] = i;
+		GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO2));
+		GL_CALL(glBufferSubData(GL_ARRAY_BUFFER, 0, this->_cellsToDrawCount * sizeof(GLuint), this->_cellsToDrawList));
+		GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, NULL));
+		//
 		this->_cubeInstProgram.bind();
 		glm::mat4 model(1.0f);
+		model = glm::translate(model, glm::vec3(this->_world.side()) * -0.5f);
+		model = glm::translate(model, glm::vec3(0.5f));
 		glm::mat4 mat = camera * model;
+		//
 		GL_CALL(glBindVertexArray(this->_cubeInstVAO));
+		this->_cubeInstProgram.uniform1u("uWorldSide", this->_world.side());
 		this->_cubeInstProgram.uniformMat4f("uMat", mat);
-		GL_CALL(glDrawElements(GL_TRIANGLES, 3 * (2 * 6), GL_UNSIGNED_INT, NULL));
+		GL_CALL(glDrawElementsInstanced(GL_TRIANGLES, 3 * (2 * 6), GL_UNSIGNED_INT, NULL, this->_cellsToDrawCount));
 		GL_CALL(glBindVertexArray(NULL));
 		this->_cubeInstProgram.unbind();
 	}
@@ -183,7 +217,11 @@ void Simulation::resume() {
 }
 
 void Simulation::reset() {
-	// TODO:
+	delete[] this->_cellsToDrawList;
+	//
+	this->_world = World<SimulationCellData>(this->_side);
+	this->_cellsToDrawCount = 0;
+	this->_cellsToDrawList = new GLuint[this->_world.size()];
 }
 
 void Simulation::step(int count) {

@@ -1,10 +1,13 @@
 #pragma once
 
+#include "world.hpp"
 #include "../utils/opengl/opengl.hpp"
 
 class App;
 
-struct SimulationCell;
+struct SimulationCellData {
+	int status;
+};
 
 class Simulation {
 public:
@@ -36,11 +39,14 @@ private:
 	//
 	int _seed;
 	int _side;
-	SimulationCell*** _world;
+	World<SimulationCellData> _world;
+	int _cellsToDrawCount;
+	GLuint* _cellsToDrawList;
 	//
 	GLProgram _gridProgram, _cubeInstProgram;
 	GLuint _gridVAO, _cubeInstVAO;
 	GLuint _gridVBO, _cubeInstVBO;
+	GLuint _cubeInstVBO2;
 	GLuint _gridEBO, _cubeInstEBO;
 	GLuint _gridMatLoc, _cubeInstMatLoc;
 };

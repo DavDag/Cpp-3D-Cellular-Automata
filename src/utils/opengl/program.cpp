@@ -49,8 +49,14 @@ void GLProgram::unbind() {
 	GL_CALL(glUseProgram(0));
 }
 
-void GLProgram::uniformMat4f(GLUniformName name, const glm::mat4& mat) {
+void GLProgram::uniform1u(GLUniformName name, unsigned int value) {
 	GLint loc = 0;
 	GL_CALL(loc = glGetUniformLocation(this->_id, name));
-	GL_CALL(glUniformMatrix4fv(loc, 1, GL_FALSE, &mat[0][0]));
+	GL_CALL(glUniform1ui(loc, value));
+}
+
+void GLProgram::uniformMat4f(GLUniformName name, const glm::mat4& value) {
+	GLint loc = 0;
+	GL_CALL(loc = glGetUniformLocation(this->_id, name));
+	GL_CALL(glUniformMatrix4fv(loc, 1, GL_FALSE, &value[0][0]));
 }

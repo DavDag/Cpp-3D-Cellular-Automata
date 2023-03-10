@@ -13,7 +13,7 @@ App::App():
 	_console(*this, 128, 256, false),
 	_display(*this, 1),
 	_simulation(*this),
-	_camera(45.0f, 0.1f, 100.0f, glm::vec3(0, 1, 0), glm::vec3(0.0f))
+	_camera(45.0f, 0.1f, 1000.0f, glm::vec3(0, 1, 0), glm::vec3(0.0f))
 {
 	this->_showUI = false;
 	this->_commands = std::vector<Command*>({
@@ -50,15 +50,17 @@ void App::render(int w, int h) {
 	rotY = glm::rotate<float>(rotY, glm::radians((float)this->_cameraAngleY), glm::vec3(1, 0, 0));
 	pos = (rotX * pos + (rotX * rotY) * pos);
 	pos = glm::normalize(pos);
-	pos *= (1.0f / this->_camera.zoom()) * this->_simulation.size();
+	pos *= (1.0f / this->_camera.zoom()) * this->_simulation.size() * 3.0f;
 	this->_camera.setpos(pos);
 	this->_camera.setviewport(w, h);
 
 	///////////////////////////////////////
 	// Simulation update
 	GL_CALL(glEnable(GL_DEPTH_TEST));
+	GL_CALL(glEnable(GL_CULL_FACE));
 	GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	this->_simulation.render(w, h);
+	GL_CALL(glDisable(GL_CULL_FACE));
 	GL_CALL(glDisable(GL_DEPTH_TEST));
 
 	///////////////////////////////////////
