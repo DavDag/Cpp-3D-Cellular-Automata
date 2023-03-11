@@ -71,6 +71,8 @@ void App::render(int w, int h) {
 		this->_console.render(w, h);
 		this->_display.render(w, h);
 	}
+
+	//ImGui::ShowDemoWindow();
 }
 
 void App::onKeyDown(int key) {
@@ -135,10 +137,7 @@ void App::onResize(int width, int height) {
 }
 
 void App::parse(const char* cmd) {
-	this->raw(cmd);
-	this->inf(cmd);
-	this->deb(cmd);
-	this->err(cmd);
+	this->raw(">> %s", cmd);
 
 	if (strcmp(cmd, "help") == 0) {
 		char buffer[128];
@@ -275,34 +274,35 @@ const glm::mat4& App::camera() {
 void App::raw(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	this->__log(IM_COL32(192, 192, 192, 255), fmt, args);
+	this->__log(LineData::Type::NONE, IM_COL32(255, 255, 255, 255), fmt, args);
 	va_end(args);
 }
 
 void App::inf(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	this->__log(IM_COL32(255, 255, 255, 255), fmt, args);
+	this->__log(LineData::Type::INFO, IM_COL32(192, 192, 192, 255), fmt, args);
 	va_end(args);
 }
 
 void App::deb(const char* fmt, ...) {
+#ifdef _DEBUG
 	va_list args;
 	va_start(args, fmt);
-	this->__log(IM_COL32(128, 128, 128, 255), fmt, args);
+	this->__log(LineData::Type::DEBUG, IM_COL32(128, 128, 128, 255), fmt, args);
 	va_end(args);
+#endif
 }
 
 void App::err(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	this->__log(IM_COL32(255, 0, 0, 255), fmt, args);
+	this->__log(LineData::Type::ERROR, IM_COL32(255, 0, 0, 255), fmt, args);
 	va_end(args);
 }
 
-void App::__log(ImU32 col, const char* fmt, va_list args) {
-	char buff[4096];
-	memset(buff, '\0', 4096);
+void App::__log(LineData::Type type, ImU32 col, const char* fmt, va_list args) {
+	static char buff[4096] = { {'\0'} };
 	vsprintf_s(buff, fmt, args);
-	this->_console.log(col, buff);
+	this->_console.log(type, col, buff);
 }

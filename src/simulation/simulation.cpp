@@ -228,15 +228,17 @@ void Simulation::render(int w, int h) {
 }
 
 void Simulation::pause() {
+	this->_app.deb("simulation paused");
 	this->_paused = true;
 }
 
 void Simulation::resume() {
+	this->_app.deb("simulation resumed");
 	this->_paused = false;
 }
 
 void Simulation::reset() {
-	//
+	this->_app.deb("simulation resetted");
 	SimCellData emptydata = {
 		.status = 0
 	};
@@ -266,10 +268,12 @@ void Simulation::step(int count) {
 }
 
 void Simulation::setspeed(int tickPerSec) {
+	this->_app.deb("simulation speed updated");
 	this->_tickSpeedSec = 1.0 / tickPerSec;
 }
 
 void Simulation::setsize(int side) {
+	this->_app.deb("simulation size updated");
 	// TODO: inplace update ?
 	// TODO: do not reset boolean parameter ?
 	this->_world = World<SimCellData>(this->_world.side(), {.status = 0});
@@ -282,12 +286,14 @@ void Simulation::setsize(int side) {
 }
 
 void Simulation::setseed(int seed) {
+	this->_app.deb("simulation seed updated");
 	// TODO: do not reset boolean parameter ?
 	this->_seed = seed;
 	this->reset();
 }
 
 void Simulation::__tick() {
+	this->_app.deb("simulation tick");
 	const int ws = this->_world.side();
 	const int initialstate = this->_rule.stateCount - 1;
 	for (int x = 0; x < ws; ++x)

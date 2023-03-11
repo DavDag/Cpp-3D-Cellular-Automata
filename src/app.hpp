@@ -1,7 +1,7 @@
 #pragma once
 
-#include "./utils/console.hpp"
-#include "./utils/usagedisplay.hpp"
+#include "./ui/console.hpp"
+#include "./ui/usagedisplay.hpp"
 #include "./command/command.hpp"
 #include "./camera/camera.hpp"
 #include "./simulation/simulation.hpp"
@@ -35,7 +35,7 @@ public:
 	void err(const char* fmt, ...);
 
 private:
-	void __log(ImU32 col, const char* fmt, va_list args);
+	void __log(LineData::Type type, ImU32 col, const char* fmt, va_list args);
 
 private:
 	bool _showUI;

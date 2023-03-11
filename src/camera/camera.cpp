@@ -29,6 +29,7 @@ Camera::Camera(App& app, float fovy, float near, float far, const glm::vec3& pos
 
 const glm::mat4& Camera::matrix() {
 	if (this->_dirty) {
+		this->_app.deb("re-computing camera");
 		// perspective
 		glm::mat4 persp =
 			glm::perspective<float>(

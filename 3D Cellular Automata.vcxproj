@@ -106,12 +106,12 @@
     <ClCompile Include="src\command\command_sim.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\simulation\simulation.cpp" />
-    <ClCompile Include="src\utils\console.cpp" />
+    <ClCompile Include="src\ui\console.cpp" />
     <ClCompile Include="src\utils\hwinfo.cpp" />
     <ClCompile Include="src\utils\opengl\common.cpp" />
     <ClCompile Include="src\utils\opengl\program.cpp" />
     <ClCompile Include="src\utils\opengl\shader.cpp" />
-    <ClCompile Include="src\utils\usagedisplay.cpp" />
+    <ClCompile Include="src\ui\usagedisplay.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui-1.89.3\backends\imgui_impl_glfw.h" />
@@ -130,14 +130,14 @@
     <ClInclude Include="src\simulation\renderer.hpp" />
     <ClInclude Include="src\simulation\simulation.hpp" />
     <ClInclude Include="src\simulation\world.hpp" />
-    <ClInclude Include="src\utils\console.hpp" />
+    <ClInclude Include="src\ui\console.hpp" />
     <ClInclude Include="src\utils\crc32.hpp" />
     <ClInclude Include="src\utils\hwinfo.hpp" />
     <ClInclude Include="src\utils\opengl\common.hpp" />
     <ClInclude Include="src\utils\opengl\opengl.hpp" />
     <ClInclude Include="src\utils\opengl\program.hpp" />
     <ClInclude Include="src\utils\opengl\shader.hpp" />
-    <ClInclude Include="src\utils\usagedisplay.hpp" />
+    <ClInclude Include="src\ui\usagedisplay.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

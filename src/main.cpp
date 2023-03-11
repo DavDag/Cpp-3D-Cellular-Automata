@@ -183,7 +183,12 @@ int initImGui(GLFWwindow* window) {
 #ifdef RES_4K
     cfg.SizePixels = 24;
 #endif // RES_4K
-    io.Fonts->AddFontDefault(&cfg);
+    //io.Fonts->AddFontDefault(&cfg);
+    // https://www.fontsquirrel.com/fonts/Luxi-Mono
+    io.Fonts->AddFontFromFileTTF(".\\assets\\luximr.ttf", cfg.SizePixels, &cfg);
+    // https://larsenwork.com/monoid/
+    //io.Fonts->AddFontFromFileTTF(".\\assets\\Monoid-Regular.ttf", cfg.SizePixels);
+    //io.Fonts->AddFontFromFileTTF(".\\assets\\Monoid-Retina.ttf", cfg.SizePixels);
     return 0;
 }
 

@@ -1,6 +1,6 @@
 #include "usagedisplay.hpp"
 #include "../app.hpp"
-#include "hwinfo.hpp"
+#include "../utils/hwinfo.hpp"
 
 #include <imgui.h>
 #include <string>
