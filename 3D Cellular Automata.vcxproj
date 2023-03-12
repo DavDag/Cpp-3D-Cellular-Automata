@@ -105,6 +105,7 @@
     <ClCompile Include="src\command\command_hwinfo.cpp" />
     <ClCompile Include="src\command\command_sim.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\simulation\renderer.cpp" />
     <ClCompile Include="src\simulation\simulation.cpp" />
     <ClCompile Include="src\ui\console.cpp" />
     <ClCompile Include="src\utils\hwinfo.cpp" />

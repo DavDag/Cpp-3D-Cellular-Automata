@@ -2,8 +2,7 @@
 
 #include "./command.hpp"
 
-struct CommandArgsDeps: CommandArgs {
-};
+struct CommandDepsArgs : CommandArgs {};
 
 class CommandDeps : public Command {
 public:
@@ -14,5 +13,5 @@ public:
 protected:
 	bool __parse(int argc, const char* args[], CommandArgs*& out) override;
 private:
-	CommandArgsDeps _result;
+	CommandDepsArgs _result;
 };

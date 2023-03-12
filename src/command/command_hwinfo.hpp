@@ -2,7 +2,7 @@
 
 #include "./command.hpp"
 
-struct CommandArgsHwInfo: CommandArgs {
+struct CommandHwInfoArgs : CommandArgs {
 };
 
 class CommandHwInfo : public Command {
@@ -14,5 +14,5 @@ public:
 protected:
 	bool __parse(int argc, const char* args[], CommandArgs*& out) override;
 private:
-	CommandArgsHwInfo _result;
+	CommandHwInfoArgs _result;
 };

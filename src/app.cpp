@@ -188,7 +188,7 @@ void App::parse(const char* cmd) {
 void App::execute(int type, CommandArgs* args) {
 	switch (type) {
 		case CommandHwInfo::TYPE: {
-			CommandArgsHwInfo& nargs = *(CommandArgsHwInfo*)args;
+			CommandHwInfoArgs& nargs = *(CommandHwInfoArgs*)args;
 			this->inf(
 				"OpenGL: %s\nGPU: %s | %s\nCPU: %s | %s\nThreads: %d\nRAM: %.2f (GB)",
 				hwinfo::opengl::version(),
@@ -201,7 +201,7 @@ void App::execute(int type, CommandArgs* args) {
 		}
 
 		case CommandDeps::TYPE: {
-			CommandArgsDeps& nargs = *(CommandArgsDeps*)args;
+			CommandDepsArgs& nargs = *(CommandDepsArgs*)args;
 			this->inf(
 				"GLFW: %s\nGLEW: %s\nIMGUI: %s\nGLM: %s",
 				hwinfo::deps::glfwVersion(),
@@ -213,25 +213,52 @@ void App::execute(int type, CommandArgs* args) {
 		}
 
 		case CommandSim::TYPE: {
-			CommandArgsSim& nargs = *(CommandArgsSim*)args;
+			CommandSimArgs& nargs = *(CommandSimArgs*)args;
 			switch (nargs.type) {
-				case SimCmd::PAUSE:
+				case CommandSimArgs::Type::INFO:
+					this->_simulation.info();
+					break;
+
+				case CommandSimArgs::Type::PAUSE:
 					this->_simulation.pause();
 					break;
 
-				case SimCmd::RESUME:
+				case CommandSimArgs::Type::RESUME:
 					this->_simulation.resume();
 					break;
 
-				case SimCmd::RESET:
-					this->_simulation.reset();
+				case CommandSimArgs::Type::RESET:
+					if (nargs.data.newseed != -1)
+						this->_simulation.setseed(nargs.data.seed);
+					else
+						this->_simulation.reset();
 					break;
 
-				case SimCmd::STEP:
-					this->_simulation.step(nargs.stepCount);
+				case CommandSimArgs::Type::STEP:
+					this->_simulation.step(nargs.data.step);
 					break;
 
-				case SimCmd::NONE:
+				case CommandSimArgs::Type::SPEED:
+					this->_simulation.setspeed(nargs.data.speed);
+					break;
+
+				case CommandSimArgs::Type::SIZE:
+					this->_simulation.setsize(nargs.data.size);
+					break;
+
+				case CommandSimArgs::Type::SEED:
+					this->_simulation.setseed(nargs.data.seed);
+					break;
+
+				case CommandSimArgs::Type::RULE:
+					this->_simulation.setrule(nargs.data.rule);
+					break;
+
+				case CommandSimArgs::Type::COLORRULE:
+					this->_simulation.setcolorrule(nargs.data.colorrule);
+					break;
+
+				case CommandSimArgs::Type::NONE:
 				default:
 					// Should never happpen
 					this->err("invalid cmd subtype!");
@@ -243,10 +270,9 @@ void App::execute(int type, CommandArgs* args) {
 		case CommandCam::TYPE: {
 			CommandArgsCam& nargs = *(CommandArgsCam*)args;
 			switch (nargs.type) {
-				case CamCmd::INFO: {
+				case CamCmd::INFO:
 					this->_camera.info();
 					break;
-				}
 
 				case CamCmd::NONE:
 				default:

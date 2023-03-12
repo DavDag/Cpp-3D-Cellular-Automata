@@ -1,11 +1,33 @@
 #pragma once
 
 #include "./command.hpp"
+#include "../simulation/simulation.hpp"
 
-enum class SimCmd { NONE = 0, PAUSE, RESUME, RESET, STEP };
-struct CommandArgsSim: CommandArgs {
-	SimCmd type;
-	int stepCount;
+struct CommandSimArgs: CommandArgs {
+	enum Type {
+		NONE = 0,
+		INFO,
+		PAUSE,
+		RESUME,
+		RESET,
+		STEP,
+		SPEED,
+		SIZE,
+		SEED,
+		RULE,
+		COLORRULE,
+	} type;
+	union {
+		// none, pause, resume
+		int newseed; // reset
+		int step; // step
+		int speed; // speed
+		int seed; // seed
+		int size; // size
+		SimRule rule; // rule
+		ColorRule colorrule; // colorrule
+	} data;
+	CommandSimArgs() : type(Type::NONE), data{ 0 } {}
 };
 
 class CommandSim : public Command {
@@ -17,5 +39,5 @@ public:
 protected:
 	bool __parse(int argc, const char* args[], CommandArgs*& out) override;
 private:
-	CommandArgsSim _result;
+	CommandSimArgs _result;
 };
