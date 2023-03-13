@@ -59,9 +59,8 @@ void Console::ui(int w, int h) {
 	ImGui::SameLine();
 	ImGui::Checkbox("Lock", &this->_uilocked);
 	ImGui::PushItemWidth(windowContentWidth);
-	ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackHistory;
-	//if (ImGui::IsWindowAppearing())
-	//	ImGui::SetKeyboardFocusHere();
+	ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_EnterReturnsTrue
+		| ImGuiInputTextFlags_CallbackHistory;
 	ImGuiInputTextCallback textcallback = [](ImGuiInputTextCallbackData* data) -> int {
 		Console& console = *((Console*) data->UserData);
 		if (console.getHistorySize() == 0) return 0;

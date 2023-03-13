@@ -174,7 +174,7 @@ void Renderer::render(const World& world, const glm::mat4& camera, int w, int h)
 				glcell.coords.y = (ci / ws) % ws;
 				glcell.coords.z = (ci) % ws;
 				glcell.coords._ = 0;
-				this->_sim.colorrule(worldcell, glcell);
+				this->_sim.applyColorRule(worldcell, glcell);
 				this->_cellsToDrawList[this->_cellsToDrawCount++] = glcell;
 			}
 		}

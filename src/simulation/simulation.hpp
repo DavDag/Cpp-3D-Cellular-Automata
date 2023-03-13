@@ -11,8 +11,10 @@ struct SimRule {
 	std::unordered_set<int>* aliveWith;
 	std::unordered_set<int>* bornWith;
 	int stateCount;
-	enum Method { NEUMANN = 1, MOORE = 2 } method;
+	enum Method { NONE = 0, NEUMANN = 'N', MOORE = 'M' } method;
+	//
 	void logIntoBufferAsString(char* buffer, int buffersize) const;
+	const char* updateFromString(const char* buffer, int buffersize);
 };
 
 class ColorRule {
@@ -52,11 +54,11 @@ public:
 	void setsize(int side);
 	void setseed(int seed);
 	void setgenprob(int genprob);
-	void setrule(const SimRule& rule);
+	void setruleFromString(const char* rule);
 	void setcolorrule(ColorRule rule);
 	//
 	int size() const;
-	void colorrule(WorldCell& worldcell, GLCell& glcell) const;
+	void applyColorRule(WorldCell& worldcell, GLCell& glcell) const;
 
 private:
 	void __tick();
@@ -69,6 +71,7 @@ private:
 	int _tickPerSec;
 	double _timeAccSec;
 	//
+	char* _newRuleBuffer;
 	SimRule _rule;
 	ColorRule _colorRule;
 	int _seed, _genprob;

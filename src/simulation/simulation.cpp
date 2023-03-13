@@ -3,29 +3,163 @@
 
 #include <random>
 
+#define MAX_RULE_LENGHT 512
+
 void SimRule::logIntoBufferAsString(char* buffer, int buffersize) const {
-	//
-	char tmp1[256];
-	int i = 0;
-	for (int ni = 0; ni < 27; ++ni)
-		if (this->aliveWith->contains(ni))
-			i += sprintf_s(tmp1 + i, 256 - i, (i == 0) ? "%d" : ",%d", ni);
-	//
-	char tmp2[256];
-	int j = 0;
-	for (int ni = 0; ni < 27; ++ni)
-		if (this->bornWith->contains(ni))
-			j += sprintf_s(tmp2 + j, 256 - j, (j == 0) ? "%d" : ",%d", ni);
-	//
-	sprintf_s(
-		buffer, buffersize,
-		"%s/%s/%d/%s",
-		tmp1,
-		tmp2,
-		this->stateCount,
-		(this->method == SimRule::Method::MOORE) ? "M" : "N"
-	);
+	auto sprintSetCompressed = [](std::unordered_set<int>& toprint, char* buffer, int buffersize) {
+		int i = 0, beg = -1, end = -1;
+		for (int ni = 0; ni < 27; ++ni)
+			if (toprint.contains(ni)) {
+				// Without range-begin
+				if (beg == -1) {
+					beg = ni; // assign range-begin
+				}
+				// Without range-end
+				else if (end == -1) {
+					// Distance 1
+					if ((ni - beg) == 1) {
+						end = ni; // assign range-end
+					}
+					else {
+						i += sprintf_s(buffer + i, buffersize - i, (i == 0) ? "%d" : ",%d", beg); // log
+						beg = ni; // assign range-begin
+					}
+				}
+				// Inside range
+				else {
+					// Distance 1
+					if ((ni - end) == 1) {
+						end = ni; // update range-end
+					}
+					else {
+						i += sprintf_s(buffer + i, buffersize - i, (i == 0) ? "%d-%d" : ",%d-%d", beg, end); // log
+						beg = ni; // assign range-begin
+						end = -1; // clear range-end
+					}
+				}
+			}
+		// Ended with range-alive
+		if (end != -1) {
+			i += sprintf_s(buffer + i, buffersize - i, (i == 0) ? "%d-%d" : ",%d-%d", beg, end); // log
+		}
+		else {
+			i += sprintf_s(buffer + i, buffersize - i, (i == 0) ? "%d" : ",%d", beg); // log
+		}
+	};
+	char tmp1[128], tmp2[128];
+	sprintSetCompressed(*this->aliveWith, tmp1, 128);
+	sprintSetCompressed(*this->bornWith, tmp2, 128);
+	memset(buffer, '\0', buffersize);
+	sprintf_s(buffer, buffersize, "%s/%s/%d/%c", tmp1, tmp2, this->stateCount, this->method);
 };
+
+const char* SimRule::updateFromString(const char* buffer, int buffersize) {
+	char errorbuffer[256] = { {'\0'} };
+	if (buffersize < 7) return "Invalid rule size: at least 7 characters are required";
+	/////////////////////////////////////////////////////
+	// Parse
+	int localbufferindex = 0;
+	char localbuffer[MAX_RULE_LENGHT * 2] = { {'\0'} };
+	std::vector<const char*> tokens;
+	int j = 0;
+	for (int i = 0; i < buffersize - 1; ++i) {
+		const char c = buffer[i];
+		bool isComma = (c == ',');
+		bool isDash = (c == '-');
+		bool isSlash = (c == '/');
+		bool isToken = isComma || isDash || isSlash;
+		if (isToken) {
+			int n = (i - j);
+			//printf("Found token %c at %d. Parsing argument [%d, %d]\n", c, i, j, j + n);
+			memcpy_s(
+				localbuffer + localbufferindex,
+				MAX_RULE_LENGHT * 2 - localbufferindex,
+				buffer + j,
+				n
+			);
+			// argument
+			j = i + 1;
+			tokens.push_back(localbuffer + localbufferindex);
+			localbufferindex += n;
+			localbuffer[localbufferindex++] = '\0';
+			// separator
+			tokens.push_back(localbuffer + localbufferindex);
+			localbuffer[localbufferindex] = c;
+			localbufferindex += 1;
+			localbuffer[localbufferindex++] = '\0';
+		}
+		// advance
+	}
+	//for (auto t : tokens) printf("Token: %s\n", t);
+	if (j != buffersize - 1) return "Invalid end. Must be a single character for method selection";
+	// extract data
+	std::vector<int> aliveWith;
+	std::vector<int> bornWith;
+	int statusCount = 0;
+	int partIndex = 0;
+	int last = -1;
+	for (auto t : tokens) {
+		if (strcmp(t, "/") == 0) {
+			if (last == -1) return "Invalid '/' token";
+			++partIndex;
+			last = -1;
+			if (partIndex > 3) return "Invalid '/' token";
+			continue;
+		}
+		if (strcmp(t, ",") == 0) {
+			if (last == -1) return "Invalid ',' token";
+			continue;
+		}
+		if (strcmp(t, "-") == 0) {
+			if (last == -1) return "Invalid '-' token";
+			if (partIndex == 0) aliveWith.push_back(-1);
+			if (partIndex == 1) bornWith.push_back(-1);
+			if (partIndex >= 2) return "Invalid '-' token";
+			continue;
+		}
+		if (partIndex == 3) return "Invalid format after third '/'";
+		int len = strlen(t);
+		char* end;
+		long res = strtol(t, &end, 10);
+		if (end == t || end != t + len) {
+			sprintf_s(errorbuffer, "Invalid number: %s", t);
+			return errorbuffer;
+		}
+		if (res < 0) return "Unacceptable negative number";
+		if (res > 26) return "Unacceptable number greater than 26";
+		if (partIndex == 2 && statusCount != 0) return "Multiple 'StatesCount' given";
+		if (partIndex == 0) aliveWith.push_back(res);
+		if (partIndex == 1) bornWith.push_back(res);
+		if (partIndex == 2) statusCount = res;
+		last = res;
+	}
+	/////////////////////////////////////////////////////
+	// Method
+	const char lastchar = buffer[buffersize - 1];
+	Method method = Method::NONE;
+	if (lastchar == Method::MOORE) method = Method::MOORE;
+	if (lastchar == Method::NEUMANN) method = Method::NEUMANN;
+	if (method == Method::NONE) return "Invalid method character. Use 'M' or 'N'";
+	/////////////////////////////////////////////////////
+	// Apply
+	this->aliveWith->clear();
+	this->aliveWith->insert(aliveWith.begin(), aliveWith.end());
+	for (int i = 0; i < aliveWith.size(); ++i)
+		if (aliveWith[i] == -1)
+			for (int j = aliveWith[i - 1]; j < aliveWith[i + 1]; j++)
+				this->aliveWith->insert(j);
+	this->bornWith->clear();
+	this->bornWith->insert(bornWith.begin(), bornWith.end());
+	for (int i = 0; i < bornWith.size(); ++i)
+		if (bornWith[i] == -1)
+			for (int j = bornWith[i - 1]; j < bornWith[i + 1]; j++)
+				this->bornWith->insert(j);
+	this->stateCount = statusCount;
+	this->method = method;
+	/////////////////////////////////////////////////////
+	// Ok
+	return nullptr;
+}
 
 void ColorRule::logIntoBufferAsString(char* buffer, int buffersize) const {
 	switch (_type) {
@@ -57,23 +191,23 @@ Simulation::Simulation(App& app) :
 	this->_timeSinceLastTickSec = 0;
 	this->_timeAccSec = 0;
 	//
+	this->_newRuleBuffer = new char[MAX_RULE_LENGHT];
+	memset(this->_newRuleBuffer, '\0', MAX_RULE_LENGHT);
 	this->_rule = SimRule{
 		.aliveWith = new std::unordered_set<int>({ 4 }),
 		.bornWith = new std::unordered_set<int>({ 4 }),
 		.stateCount = 5,
 		.method = SimRule::Method::MOORE
 	};
-	this->_colorRule = ColorRule::POS3D;
+	this->_rule.logIntoBufferAsString(this->_newRuleBuffer, MAX_RULE_LENGHT);
+	this->_colorRule = ColorRule::DECAY;
+	//
 	this->_seed = rand();
 	this->_genprob = 50;
 	this->_world = World(32);
 	this->_renderer.setMaxCellCount(this->_world.size());
 	//
 	this->reset();
-}
-
-int Simulation::size() const {
-	return this->_world.side();
 }
 
 void Simulation::initialize() {
@@ -155,9 +289,59 @@ void Simulation::ui(int w, int h) {
 	/////////////////////////////////////////
 	// Rule
 	ImGui::SeparatorText("");
-	char tmp1[64];
-	this->_rule.logIntoBufferAsString(tmp1, 64);
+	char tmp1[MAX_RULE_LENGHT];
+	this->_rule.logIntoBufferAsString(tmp1, MAX_RULE_LENGHT);
 	ImGui::Text("Rule: %s", tmp1);
+	ImGui::PushItemWidth(windowContentWidth);
+	if (ImGui::InputText(
+		"###newrule",
+		this->_newRuleBuffer, MAX_RULE_LENGHT,
+		ImGuiInputTextFlags_EnterReturnsTrue)) {
+		int len = strnlen(this->_newRuleBuffer, MAX_RULE_LENGHT);
+		this->setruleFromString(this->_newRuleBuffer);
+	}
+	static std::pair<const char*, const char*> rules[] = {
+		{"445 (Jason Rampe)", "4/4/5/M"},
+		{"Amoeba (Jason Rampe)", "9-26/5-7,12-13,15/5/M"},
+		{"Architecture (Jason Rampe)", "4-6/3/2/M"},
+		{"Builder 1 (Jason Rampe)", "2,6,9/4,6,8-9/10/M"},
+		{"Builder 2 (Jason Rampe)", "5-7/1/2/M"},
+		{"Clouds 1 (Jason Rampe)", "13-26/13-14,17-19/2/M"},
+		{"Clouds 2 (Jason Rampe)", "12-26/13-14/2/M"},
+		{"Construction (Jason Rampe)", "0-2,4,6-11,13-17,21-26/9-10,16,23-24/2/M"},
+		{"Coral (Jason Rampe)", "5-8/6-7,9,12/4/M"},
+		{"Crystal Growth (Jason Rampe) 1", "0-6/1,3/2/N"},
+		{"Crystal Growth (Jason Rampe) 2", "1-2/1,3/5/N"},
+		{"Diamond Growth (Jason Rampe)", "5-6/1-3/7/N"},
+		{"Expanding Shell (Jason Rampe)", "6,7-9,11,13,15-16,18/6-10,13-14,16,18-19,22-25/5/M"},
+		{"More Structures (Jason Rampe)", "7-26/4/4/M"},
+		{"Pulse Waves (Jason Rampe)", "3/1-3/10/M"},
+		{"Pyroclastic (Jason Rampe)", "4-7/6-8/10/M"},
+		{"Sample 1 (Jason Rampe)", "10-26/5,8-26/4/M"},
+		{"Shells (Jason Rampe)", "3,5,7,9,11,15,17,19,21,23-24,26/3,6,8-9,11,14-17,19,24/7/M"},
+		//{"Single Point Replication (Jason Rampe)", "/1/2/M"},
+		{"Slow Decay 1 (Jason Rampe)", "13-26/10-26/3/M"},
+		{"Slow Decay 2 (Jason Rampe)", "1,4,8,11,13-26/13-26/5/M"},
+		{"Spiky Growth (Jason Rampe)", "0-3,7-9,11-13,18,21-22,24,26/13,17,20-26/4/M"},
+		{"Stable Structures (Evan Wallace)", "13-26/14-19/2/M"},
+		//{"Symmetry (Jason Rampe)", "/2/10/M"},
+		{"von Neumann Builder (Jason Rampe)", "1-3/1,4-5/5/N"}
+	};
+	if (ImGui::BeginCombo("###ruledatabase", "Choose from DB")) {
+		for (auto pair : rules) {
+			const char* name = pair.first;
+			const char* rule = pair.second;
+			bool selected = (strcmp(rule, this->_newRuleBuffer) == 0);
+			if (ImGui::Selectable(name, selected)) {
+				this->_app.inf("Requested: %s %s", name, rule);
+				this->setruleFromString(rule);
+			}
+			if (selected)
+				ImGui::SetItemDefaultFocus();
+		}
+		ImGui::EndCombo();
+	}
+	ImGui::PopItemWidth();
 	/////////////////////////////////////////
 	// Status
 	ImGui::SeparatorText("");
@@ -167,6 +351,10 @@ void Simulation::ui(int w, int h) {
 	if (ImGui::Button("Resume")) this->resume();
 	ImGui::SameLine();
 	if (ImGui::Button("Reset")) this->reset();
+	ImGui::SameLine();
+	if (ImGui::Button("#1")) this->step(1);
+	ImGui::SameLine();
+	if (ImGui::Button("#5")) this->step(5);
 	/////////////////////////////////////////
 	// Speed
 	ImGui::SeparatorText("");
@@ -334,22 +522,30 @@ void Simulation::setgenprob(int genprob) {
 	this->reset();
 }
 
-void Simulation::setrule(const SimRule& rule) {
-	char rulestring[512];
-	rule.logIntoBufferAsString(rulestring, 512);
-	this->_app.deb("simulation rule updated to %s", rulestring);
-	this->_rule = rule;
+void Simulation::setruleFromString(const char* rule) {
+	int len = strlen(rule);
+	const char* errorStr = this->_rule.updateFromString(rule, len);
+	if (errorStr != nullptr) {
+		this->_app.err("Rule parsing error: %s", errorStr);
+		return;
+	}
+	this->_rule.logIntoBufferAsString(this->_newRuleBuffer, MAX_RULE_LENGHT);
+	this->_app.deb("simulation rule updated to %s", this->_newRuleBuffer);
 	this->reset();
 }
 
 void Simulation::setcolorrule(ColorRule rule) {
 	char colorrulestring[32];
-	this->_colorRule.logIntoBufferAsString(colorrulestring, 32);
+	rule.logIntoBufferAsString(colorrulestring, 32);
 	this->_app.deb("simulation color rule updated to %s", colorrulestring);
 	this->_colorRule = rule;
 }
 
-void Simulation::colorrule(WorldCell& worldcell, GLCell& glcell) const {
+int Simulation::size() const {
+	return this->_world.side();
+}
+
+void Simulation::applyColorRule(WorldCell& worldcell, GLCell& glcell) const {
 	switch (this->_colorRule) {
 		case ColorRule::POS3D: {
 			float r = ((float)glcell.coords.x + 1) / this->_world.side();

@@ -250,7 +250,7 @@ void App::deb(const char* fmt, ...) {
 void App::err(const char* fmt, ...) {
 	va_list args;
 	va_start(args, fmt);
-	this->__log(LineData::Type::ERROR, IM_COL32(255, 0, 0, 255), fmt, args);
+	this->__log(LineData::Type::ERROR, IM_COL32(255, 64, 64, 255), fmt, args);
 	va_end(args);
 }
 
