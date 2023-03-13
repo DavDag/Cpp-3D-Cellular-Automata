@@ -146,19 +146,21 @@ void Simulation::render(int w, int h) {
 }
 
 void Simulation::ui(int w, int h) {
+	/////////////////////////////////////////
 	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+	ImGui::SetNextWindowSize(ImVec2(w * 0.25f, h * 0.5f), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
 	ImGui::Begin("Simulation", nullptr, windowFlags);
 	float windowContentWidth = ImGui::GetWindowContentRegionWidth();
 	/////////////////////////////////////////
 	// Rule
-	ImGui::SeparatorText("Rule");
+	ImGui::SeparatorText("");
 	char tmp1[64];
 	this->_rule.logIntoBufferAsString(tmp1, 64);
-	ImGui::Text("As String: %s", tmp1);
+	ImGui::Text("Rule: %s", tmp1);
 	/////////////////////////////////////////
 	// Status
-	ImGui::SeparatorText("Running status");
+	ImGui::SeparatorText("");
 	ImGui::Text("Status: %8s", (this->_paused) ? "paused" : "running");
 	if (ImGui::Button("Pause")) this->pause();
 	ImGui::SameLine();
@@ -167,7 +169,7 @@ void Simulation::ui(int w, int h) {
 	if (ImGui::Button("Reset")) this->reset();
 	/////////////////////////////////////////
 	// Speed
-	ImGui::SeparatorText("Speed");
+	ImGui::SeparatorText("");
 	ImGui::Text("Speed: %d t/s", this->_tickPerSec);
 	for (int i = 0; i <= 6; ++i) {
 		int v = 1 << (i + 0);
@@ -181,7 +183,7 @@ void Simulation::ui(int w, int h) {
 	ImGui::Text("Tick time (max): %d ms", 44);
 	/////////////////////////////////////////
 	// Size
-	ImGui::SeparatorText("Size");
+	ImGui::SeparatorText("");
 	ImGui::Text("Size: %d x %d x %d", this->size(), this->size(), this->size());
 	for (int i = 0; i <= 3; ++i) {
 		int v = 1 << (i + 4);
@@ -190,11 +192,11 @@ void Simulation::ui(int w, int h) {
 		if (i > 0) ImGui::SameLine();
 		if (ImGui::RadioButton(buff, this->size() == v)) this->setsize(v);
 	}
-	ImGui::Text("World Size (#): %8d", this->_world.size());
-	ImGui::Text("World Size (Mb): %7.2f", this->_world.size() * sizeof(WorldCell) / 1024.0f / 1024.0f);
+	ImGui::Text("Cell count: %8d", this->_world.size());
+	ImGui::Text("World Size: %8.2f Mb", this->_world.size() * sizeof(WorldCell) / 1024.0f / 1024.0f);
 	/////////////////////////////////////////
 	// Seed
-	ImGui::SeparatorText("Generation");
+	ImGui::SeparatorText("");
 	ImGui::Text("Seed: %04x", this->_seed);
 	if (ImGui::Button("New Seed")) this->setseed(rand());
 	ImGui::Text("Gen Prob: %3d %%", this->_genprob);
@@ -207,7 +209,7 @@ void Simulation::ui(int w, int h) {
 	}
 	/////////////////////////////////////////
 	// ColorRule
-	ImGui::SeparatorText("Coloring");
+	ImGui::SeparatorText("");
 	char tmp2[32];
 	this->_colorRule.logIntoBufferAsString(tmp2, 32);
 	ImGui::Text("ColorRule: %s", tmp2);
@@ -219,11 +221,8 @@ void Simulation::ui(int w, int h) {
 		if (ImGui::RadioButton(colorRulesStr[i], this->_colorRule == v)) this->setcolorrule(v);
 	}
 	/////////////////////////////////////////
-	// [Rendering]
-	ImGui::SeparatorText("Rendering");
-	this->_renderer.ui(w, h);
-	/////////////////////////////////////////
 	ImGui::End();
+	this->_renderer.ui(w, h);
 }
 
 void Simulation::info() const {

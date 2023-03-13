@@ -198,12 +198,27 @@ void Renderer::render(const World& world, const glm::mat4& camera, int w, int h)
 }
 
 void Renderer::ui(int w, int h) {
-
+	ImGui::SetNextWindowPos(ImVec2(0, h * 0.55f), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2(w * 0.25f, h * 0.3f), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse;
+	ImGui::Begin("Rendering", nullptr, windowFlags);
+	float windowContentWidth = ImGui::GetWindowContentRegionWidth();
+	///////////////////////////////////////////////
+	// Buffer Size
+	ImGui::SeparatorText("");
+	int vboSize;
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, this->_cubeInstVBO2));
+	GL_CALL(glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &vboSize));
+	GL_CALL(glBindBuffer(GL_ARRAY_BUFFER, 0));
+	ImGui::Text("Max cell count: %8d ", this->_maxCellCount);
+	ImGui::Text("Buffer Size: %11.2f Mb", vboSize / 1024.0f / 1024.0f);
+	///////////////////////////////////////////////
+	ImGui::End();
 }
 
 void Renderer::setMaxCellCount(int count) {
 	delete[] this->_cellsToDrawList;
-	this->_maxCellCount = count + 1;
+	this->_maxCellCount = count;
 	this->_cellsToDrawCount = 0;
 	this->_cellsToDrawList = new GLCell[this->_maxCellCount];
 	//

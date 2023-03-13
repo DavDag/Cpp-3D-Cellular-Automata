@@ -182,6 +182,8 @@ int initImGui(GLFWwindow* window) {
     ImGui::StyleColorsDark();
     if (!ImGui_ImplGlfw_InitForOpenGL(window, true)) return 1;
     if (!ImGui_ImplOpenGL3_Init("#version 450")) return 2;
+    //////////////////////////////////////////////////////
+    // Font
     ImGuiIO& io = ImGui::GetIO();
     ImFontConfig cfg;
     cfg.SizePixels = FONT_PIXEL_SIZE;
@@ -191,10 +193,15 @@ int initImGui(GLFWwindow* window) {
     // https://larsenwork.com/monoid/
     //io.Fonts->AddFontFromFileTTF(".\\assets\\Monoid-Regular.ttf", cfg.SizePixels);
     //io.Fonts->AddFontFromFileTTF(".\\assets\\Monoid-Retina.ttf", cfg.SizePixels);
+    //////////////////////////////////////////////////////
+    // Colors
+    ImGui::PushStyleColor(ImGuiCol_Separator, IM_COL32(0, 156, 255, 64));
     return 0;
 }
 
 void exitImGui() {
+    ImGui::PopStyleColor(); // ImGuiCol_Separator
+    //////////////////////////////////////////////////////
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();

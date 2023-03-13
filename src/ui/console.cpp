@@ -9,7 +9,7 @@ Console::Console(App& app, int rowCount, int rowLenght, bool autowrap):
 	_app(app)
 {
 	this->_autowrap = autowrap;
-	this->_uilocked = false;
+	this->_uilocked = true;
 	this->_rowCount = rowCount;
 	this->_rowLenght = rowLenght;
 	this->_currentRow = 0;
@@ -46,8 +46,8 @@ void Console::update(double dtSec) {
 }
 
 void Console::ui(int w, int h) {
-	ImGui::SetNextWindowPos(ImVec2(w * 0.1f, h  * 0.75f), ImGuiCond_FirstUseEver);
-	ImGui::SetNextWindowSize(ImVec2((float) w * 0.8f, h * 0.25f), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowPos(ImVec2(w * 0.25f, h  * 0.75f), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2((float) w * 0.5f, h * 0.25f), ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_AlwaysVerticalScrollbar;
 	if (this->_uilocked)
