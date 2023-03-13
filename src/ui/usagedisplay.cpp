@@ -33,7 +33,7 @@ void UsageDisplay::initialize() {
 
 }
 
-void UsageDisplay::render(int w, int h) {
+void UsageDisplay::ui(int w, int h) {
 	//ImGui::ShowDemoWindow();
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse
 		| ImGuiWindowFlags_AlwaysAutoResize
@@ -59,7 +59,8 @@ void UsageDisplay::render(int w, int h) {
 	ImGui::Text("Tot: %9.2f Mb", this->_gpuMemPhysicalMb);
 	//
 	ImGui::SeparatorText("CPU");
-	ImGui::Text("Usage: %8.2f %%", this->_cpuUsagePercentageAllCores);
+	ImGui::Text("Main: %9.2f %%", this->_cpuUsagePercentagePerCore[this->_runningCoreInd]);
+	ImGui::Text("All: %10.2f %%", this->_cpuUsagePercentageAllCores);
 	const int ncores = this->_coreCount;
 	const int ncols = (ncores > 8) ? 4 : 2;
 	ImGui::BeginTable("cores", ncols);

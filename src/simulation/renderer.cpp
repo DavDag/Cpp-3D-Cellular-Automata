@@ -1,8 +1,10 @@
 #include "renderer.hpp"
 #include "world.hpp"
 #include "simulation.hpp"
+#include "../app.hpp"
 
-Renderer::Renderer(Simulation& sim):
+Renderer::Renderer(App& app, Simulation& sim):
+	_app(app),
 	_sim(sim)
 {
 	this->_maxCellCount = 1;
@@ -193,6 +195,10 @@ void Renderer::render(const World& world, const glm::mat4& camera, int w, int h)
 		GL_CALL(glBindVertexArray(NULL));
 		this->_cubeInstProgram.unbind();
 	}
+}
+
+void Renderer::ui(int w, int h) {
+
 }
 
 void Renderer::setMaxCellCount(int count) {

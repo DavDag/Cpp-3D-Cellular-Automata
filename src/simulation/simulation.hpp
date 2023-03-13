@@ -41,6 +41,7 @@ public:
 	void initialize();
 	void update(double dtSec);
 	void render(int w, int h);
+	void ui(int w, int h);
 	//
 	void info() const;
 	void pause();
@@ -50,6 +51,7 @@ public:
 	void setspeed(int tickPerSec);
 	void setsize(int side);
 	void setseed(int seed);
+	void setgenprob(int genprob);
 	void setrule(const SimRule& rule);
 	void setcolorrule(ColorRule rule);
 	//
@@ -64,12 +66,12 @@ private:
 	//
 	bool _paused;
 	double _timeSinceLastTickSec;
-	double _tickSpeedSec;
+	int _tickPerSec;
 	double _timeAccSec;
 	//
 	SimRule _rule;
 	ColorRule _colorRule;
-	int _seed;
+	int _seed, _genprob;
 	World _world;
 	Renderer _renderer;
 };

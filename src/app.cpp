@@ -3,16 +3,16 @@
 #include "./utils/opengl/opengl.hpp"
 #include "./command/command_hwinfo.hpp"
 #include "./command/command_deps.hpp"
-#include "./command/command_sim.hpp"
-#include "./command/command_cam.hpp"
 
 #include <imgui.h>
 #include <GLFW/glfw3.h>
 #include <stdarg.h>
 #include <string>
 
+#define CONSOLE_LINE_LENGHT 4096
+
 App::App():
-	_console(*this, 256, 4096, false),
+	_console(*this, 256, CONSOLE_LINE_LENGHT, false),
 	_display(*this, 1),
 	_simulation(*this),
 	_camera(*this, 45.0f, 0.1f, 1000.0f, glm::vec3(0, 1, 0), glm::vec3(0.0f))
@@ -21,8 +21,6 @@ App::App():
 	this->_commands = std::vector<Command*>({
 		new CommandHwInfo(),
 		new CommandDeps(),
-		new CommandSim(),
-		new CommandCam(),
 	});
 	//
 	this->_cameraAngleX = 0;
@@ -68,10 +66,10 @@ void App::render(int w, int h) {
 	///////////////////////////////////////
 	// UI
 	if (this->_showUI) {
-		this->_console.render(w, h);
-		this->_display.render(w, h);
+		this->_console.ui(w, h);
+		this->_simulation.ui(w, h);
 	}
-
+	this->_display.ui(w, h);
 	//ImGui::ShowDemoWindow();
 }
 
@@ -140,9 +138,9 @@ void App::parse(const char* cmd) {
 	this->raw(">> %s", cmd);
 
 	if (strcmp(cmd, "help") == 0) {
-		char buffer[128];
+		char buffer[CONSOLE_LINE_LENGHT];
 		for (const auto& c : this->_commands) {
-			c->description(buffer, 128);
+			c->description(buffer, CONSOLE_LINE_LENGHT);
 			this->inf(buffer);
 		}
 		return;
@@ -151,9 +149,9 @@ void App::parse(const char* cmd) {
 	// Parse cmd, substitute ' ' with '\0'
 	// and "create" a string list.
 	int cmdlen = (int) strlen(cmd);
-	char buffer[512] = { '0' };
-	strncpy_s(buffer, 512, cmd, cmdlen);
-	const int maxArgc = 32;
+	char buffer[CONSOLE_LINE_LENGHT] = { '0' };
+	strncpy_s(buffer, CONSOLE_LINE_LENGHT, cmd, cmdlen);
+	const int maxArgc = 64;
 	const char* args[maxArgc] = { nullptr };
 	int argc = 0;
 	args[argc++] = &buffer[0];
@@ -212,77 +210,6 @@ void App::execute(int type, CommandArgs* args) {
 			break;
 		}
 
-		case CommandSim::TYPE: {
-			CommandSimArgs& nargs = *(CommandSimArgs*)args;
-			switch (nargs.type) {
-				case CommandSimArgs::Type::INFO:
-					this->_simulation.info();
-					break;
-
-				case CommandSimArgs::Type::PAUSE:
-					this->_simulation.pause();
-					break;
-
-				case CommandSimArgs::Type::RESUME:
-					this->_simulation.resume();
-					break;
-
-				case CommandSimArgs::Type::RESET:
-					if (nargs.data.newseed != -1)
-						this->_simulation.setseed(nargs.data.seed);
-					else
-						this->_simulation.reset();
-					break;
-
-				case CommandSimArgs::Type::STEP:
-					this->_simulation.step(nargs.data.step);
-					break;
-
-				case CommandSimArgs::Type::SPEED:
-					this->_simulation.setspeed(nargs.data.speed);
-					break;
-
-				case CommandSimArgs::Type::SIZE:
-					this->_simulation.setsize(nargs.data.size);
-					break;
-
-				case CommandSimArgs::Type::SEED:
-					this->_simulation.setseed(nargs.data.seed);
-					break;
-
-				case CommandSimArgs::Type::RULE:
-					this->_simulation.setrule(nargs.data.rule);
-					break;
-
-				case CommandSimArgs::Type::COLORRULE:
-					this->_simulation.setcolorrule(nargs.data.colorrule);
-					break;
-
-				case CommandSimArgs::Type::NONE:
-				default:
-					// Should never happpen
-					this->err("invalid cmd subtype!");
-					break;
-			}
-			break;
-		}
-
-		case CommandCam::TYPE: {
-			CommandArgsCam& nargs = *(CommandArgsCam*)args;
-			switch (nargs.type) {
-				case CamCmd::INFO:
-					this->_camera.info();
-					break;
-
-				case CamCmd::NONE:
-				default:
-					// Should never happpen
-					this->err("[error] invalid cmd subtype!");
-					break;
-			}
-			break;
-		}
-
 		case 0:
 		default:
 			// Should never happpen
@@ -328,7 +255,7 @@ void App::err(const char* fmt, ...) {
 }
 
 void App::__log(LineData::Type type, ImU32 col, const char* fmt, va_list args) {
-	static char buff[4096] = { {'\0'} };
+	static char buff[CONSOLE_LINE_LENGHT] = { {'\0'} };
 	vsprintf_s(buff, fmt, args);
 	this->_console.log(type, col, buff);
 }

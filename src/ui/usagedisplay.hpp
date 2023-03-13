@@ -5,10 +5,10 @@ class App;
 class UsageDisplay {
 public:
 	UsageDisplay(App& app, float updatePerSec);
-	
+	//
 	void initialize();
-	void render(int w, int h);
 	void update(double dtSec);
+	void ui(int w, int h);
 
 private:
 	void __update();

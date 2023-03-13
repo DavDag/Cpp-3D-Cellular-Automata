@@ -100,10 +100,8 @@
     <ClCompile Include="src\app.cpp" />
     <ClCompile Include="src\camera\camera.cpp" />
     <ClCompile Include="src\command\command.cpp" />
-    <ClCompile Include="src\command\command_cam.cpp" />
     <ClCompile Include="src\command\command_deps.cpp" />
     <ClCompile Include="src\command\command_hwinfo.cpp" />
-    <ClCompile Include="src\command\command_sim.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\simulation\renderer.cpp" />
     <ClCompile Include="src\simulation\simulation.cpp" />
@@ -113,6 +111,7 @@
     <ClCompile Include="src\utils\opengl\program.cpp" />
     <ClCompile Include="src\utils\opengl\shader.cpp" />
     <ClCompile Include="src\ui\usagedisplay.cpp" />
+    <ClCompile Include="src\utils\threading.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="deps\imgui-1.89.3\backends\imgui_impl_glfw.h" />
@@ -124,10 +123,8 @@
     <ClInclude Include="src\app.hpp" />
     <ClInclude Include="src\camera\camera.hpp" />
     <ClInclude Include="src\command\command.hpp" />
-    <ClInclude Include="src\command\command_cam.hpp" />
     <ClInclude Include="src\command\command_deps.hpp" />
     <ClInclude Include="src\command\command_hwinfo.hpp" />
-    <ClInclude Include="src\command\command_sim.hpp" />
     <ClInclude Include="src\simulation\renderer.hpp" />
     <ClInclude Include="src\simulation\simulation.hpp" />
     <ClInclude Include="src\simulation\world.hpp" />
@@ -139,6 +136,7 @@
     <ClInclude Include="src\utils\opengl\program.hpp" />
     <ClInclude Include="src\utils\opengl\shader.hpp" />
     <ClInclude Include="src\ui\usagedisplay.hpp" />
+    <ClInclude Include="src\utils\threading.hpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".gitignore" />

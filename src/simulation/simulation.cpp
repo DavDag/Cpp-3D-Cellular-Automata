@@ -50,10 +50,10 @@ void ColorRule::logIntoBufferAsString(char* buffer, int buffersize) const {
 
 Simulation::Simulation(App& app) :
 	_app(app),
-	_renderer(*this)
+	_renderer(app, *this)
 {
 	this->_paused = false;
-	this->_tickSpeedSec = 1.0 / 8; // tick/sec
+	this->_tickPerSec = 8;
 	this->_timeSinceLastTickSec = 0;
 	this->_timeAccSec = 0;
 	//
@@ -65,6 +65,7 @@ Simulation::Simulation(App& app) :
 	};
 	this->_colorRule = ColorRule::POS3D;
 	this->_seed = rand();
+	this->_genprob = 50;
 	this->_world = World(32);
 	this->_renderer.setMaxCellCount(this->_world.size());
 	//
@@ -82,8 +83,9 @@ void Simulation::initialize() {
 void Simulation::update(double dtSec) {
 	this->_timeAccSec += dtSec;
 	this->_timeSinceLastTickSec += dtSec;
-	while (this->_timeSinceLastTickSec >= this->_tickSpeedSec) {
-		this->_timeSinceLastTickSec -= this->_tickSpeedSec;
+	float tickSpeedSec = 1.0f / this->_tickPerSec;
+	while (this->_timeSinceLastTickSec >= tickSpeedSec) {
+		this->_timeSinceLastTickSec -= tickSpeedSec;
 		// Pausing stops "natural" ticks
 		if (!this->_paused) this->__tick();
 	}
@@ -101,14 +103,14 @@ void Simulation::__tick() {
 				//
 				int neighbours = 0;
 				switch (this->_rule.method) {
-					case SimRule::Method::MOORE: {
-						neighbours = this->_world.countMoore(initialstate, x, y, z);
-						break;
-					}
-					case SimRule::Method::NEUMANN: {
-						neighbours = this->_world.countNeumann(initialstate, x, y, z);
-						break;
-					}
+				case SimRule::Method::MOORE: {
+					neighbours = this->_world.countMoore(initialstate, x, y, z);
+					break;
+				}
+				case SimRule::Method::NEUMANN: {
+					neighbours = this->_world.countNeumann(initialstate, x, y, z);
+					break;
+				}
 				}
 				data.neighbours = neighbours;
 				//
@@ -143,6 +145,87 @@ void Simulation::render(int w, int h) {
 	);
 }
 
+void Simulation::ui(int w, int h) {
+	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_FirstUseEver);
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize;
+	ImGui::Begin("Simulation", nullptr, windowFlags);
+	float windowContentWidth = ImGui::GetWindowContentRegionWidth();
+	/////////////////////////////////////////
+	// Rule
+	ImGui::SeparatorText("Rule");
+	char tmp1[64];
+	this->_rule.logIntoBufferAsString(tmp1, 64);
+	ImGui::Text("As String: %s", tmp1);
+	/////////////////////////////////////////
+	// Status
+	ImGui::SeparatorText("Running status");
+	ImGui::Text("Status: %8s", (this->_paused) ? "paused" : "running");
+	if (ImGui::Button("Pause")) this->pause();
+	ImGui::SameLine();
+	if (ImGui::Button("Resume")) this->resume();
+	ImGui::SameLine();
+	if (ImGui::Button("Reset")) this->reset();
+	/////////////////////////////////////////
+	// Speed
+	ImGui::SeparatorText("Speed");
+	ImGui::Text("Speed: %d t/s", this->_tickPerSec);
+	for (int i = 0; i <= 6; ++i) {
+		int v = 1 << (i + 0);
+		char buff[4];
+		sprintf_s(buff, "%2d", v);
+		if (i > 0) ImGui::SameLine();
+		if (ImGui::RadioButton(buff, this->_tickPerSec == v)) this->setspeed(v);
+	}
+	ImGui::Text("Tick time (avg): %d ms", 12);
+	ImGui::Text("Tick time (min): %d ms", 8);
+	ImGui::Text("Tick time (max): %d ms", 44);
+	/////////////////////////////////////////
+	// Size
+	ImGui::SeparatorText("Size");
+	ImGui::Text("Size: %d x %d x %d", this->size(), this->size(), this->size());
+	for (int i = 0; i <= 3; ++i) {
+		int v = 1 << (i + 4);
+		char buff[4];
+		sprintf_s(buff, "%3d", v);
+		if (i > 0) ImGui::SameLine();
+		if (ImGui::RadioButton(buff, this->size() == v)) this->setsize(v);
+	}
+	ImGui::Text("World Size (#): %8d", this->_world.size());
+	ImGui::Text("World Size (Mb): %7.2f", this->_world.size() * sizeof(WorldCell) / 1024.0f / 1024.0f);
+	/////////////////////////////////////////
+	// Seed
+	ImGui::SeparatorText("Generation");
+	ImGui::Text("Seed: %04x", this->_seed);
+	if (ImGui::Button("New Seed")) this->setseed(rand());
+	ImGui::Text("Gen Prob: %3d %%", this->_genprob);
+	for (int i = 0; i < 3; ++i) {
+		int v = 25 * (i + 1);
+		char buff[8];
+		sprintf_s(buff, "%3d %%", v);
+		if (i > 0) ImGui::SameLine();
+		if (ImGui::RadioButton(buff, this->_genprob == v)) this->setgenprob(v);
+	}
+	/////////////////////////////////////////
+	// ColorRule
+	ImGui::SeparatorText("Coloring");
+	char tmp2[32];
+	this->_colorRule.logIntoBufferAsString(tmp2, 32);
+	ImGui::Text("ColorRule: %s", tmp2);
+	static const char* colorRulesStr[] = { "None", "Decay", "Density", "Pos3D" };
+	static ColorRule colorRules[] = { ColorRule::NONE, ColorRule::DECAY, ColorRule::DENSITY, ColorRule::POS3D };
+	for (int i = 0; i < 4; ++i) {
+		ColorRule v = colorRules[i];
+		if (i > 0) ImGui::SameLine();
+		if (ImGui::RadioButton(colorRulesStr[i], this->_colorRule == v)) this->setcolorrule(v);
+	}
+	/////////////////////////////////////////
+	// [Rendering]
+	ImGui::SeparatorText("Rendering");
+	this->_renderer.ui(w, h);
+	/////////////////////////////////////////
+	ImGui::End();
+}
+
 void Simulation::info() const {
 	char rulestring[512];
 	this->_rule.logIntoBufferAsString(rulestring, 512);
@@ -156,7 +239,7 @@ void Simulation::info() const {
 		"Rule: %s\n"
 		"ColorRule: %s\n",
 		(this->_paused) ? "paused" : "running",
-		(int) round(1.0f / this->_tickSpeedSec),
+		this->_tickPerSec,
 		this->_world.side(), this->_world.side(), this->_world.side(),
 		this->_seed,
 		rulestring,
@@ -181,7 +264,7 @@ void Simulation::reset() {
 		this->_world.set(emptydata, i);
 	//
 	std::mt19937 gen(this->_seed);
-	std::uniform_int_distribution<int> distr(0, 1);
+	std::uniform_int_distribution<int> distr(0, 99);
 	float cen = this->_world.side() / 2.0f;
 	float off = glm::max(2.0f, this->_world.side() * 0.1f);
 	int initialstate = this->_rule.stateCount - 1;
@@ -189,8 +272,9 @@ void Simulation::reset() {
 	for (float dx = -off; dx < +off; dx += 1.0f)
 		for (float dy = -off; dy < +off; dy += 1.0f)
 			for (float dz = -off; dz < +off; dz += 1.0f) {
+				int rnd = distr(gen);
 				WorldCell data = {
-					.status = distr(gen) * initialstate,
+					.status = (rnd < this->_genprob) ? initialstate : 0,
 					.neighbours = 0,
 					.nextstatus = 0
 				};
@@ -229,22 +313,25 @@ void Simulation::step(int count) {
 
 void Simulation::setspeed(int tickPerSec) {
 	this->_app.deb("simulation speed updated to %d", tickPerSec);
-	this->_tickSpeedSec = 1.0 / tickPerSec;
+	this->_tickPerSec = tickPerSec;
 }
 
 void Simulation::setsize(int side) {
 	this->_app.deb("simulation size updated to %d x %d x %d (%d)", side, side, side, side * side * side);
-	// TODO: inplace update ?
-	// TODO: do not reset boolean parameter ?
-	this->_world = World(side, {.status = 0});
+	this->_world = World(side);
 	this->_renderer.setMaxCellCount(this->_world.size());
 	this->reset();
 }
 
 void Simulation::setseed(int seed) {
 	this->_app.deb("simulation seed updated to %d", seed);
-	// TODO: do not reset boolean parameter ?
 	this->_seed = seed;
+	this->reset();
+}
+
+void Simulation::setgenprob(int genprob) {
+	this->_app.deb("simulation genprob updated to %d", genprob);
+	this->_genprob = genprob;
 	this->reset();
 }
 

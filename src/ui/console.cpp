@@ -9,6 +9,7 @@ Console::Console(App& app, int rowCount, int rowLenght, bool autowrap):
 	_app(app)
 {
 	this->_autowrap = autowrap;
+	this->_uilocked = false;
 	this->_rowCount = rowCount;
 	this->_rowLenght = rowLenght;
 	this->_currentRow = 0;
@@ -44,18 +45,19 @@ void Console::update(double dtSec) {
 
 }
 
-void Console::render(int w, int h) {
-	ImGui::SetNextWindowPos(ImVec2(0, 0), ImGuiCond_Always);
-	ImGui::SetNextWindowSize(ImVec2(w * 0.3f, (float) h), ImGuiCond_Always);
+void Console::ui(int w, int h) {
+	ImGui::SetNextWindowPos(ImVec2(w * 0.1f, h  * 0.75f), ImGuiCond_FirstUseEver);
+	ImGui::SetNextWindowSize(ImVec2((float) w * 0.8f, h * 0.25f), ImGuiCond_FirstUseEver);
 	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse
-		| ImGuiWindowFlags_NoMove
-		| ImGuiWindowFlags_NoResize
-		| ImGuiWindowFlags_NoSavedSettings
 		| ImGuiWindowFlags_AlwaysVerticalScrollbar;
+	if (this->_uilocked)
+		windowFlags |= ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
 	ImGui::Begin("Console", nullptr, windowFlags);
 	float windowContentWidth = ImGui::GetWindowContentRegionWidth();
 	//
 	ImGui::Checkbox("Autowrap", &this->_autowrap);
+	ImGui::SameLine();
+	ImGui::Checkbox("Lock", &this->_uilocked);
 	ImGui::PushItemWidth(windowContentWidth);
 	ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_EnterReturnsTrue | ImGuiInputTextFlags_CallbackHistory;
 	//if (ImGui::IsWindowAppearing())
@@ -116,9 +118,9 @@ void Console::render(int w, int h) {
 			// Repeat badge
 			if (linedata.repeatcount > 1) {
 				char badge[16];
-				sprintf_s(badge, "x%03d", linedata.repeatcount);
+				sprintf_s(badge, "x%05d", linedata.repeatcount);
 				float pd = 2.0f;
-				ImVec2 textSize = ImGui::CalcTextSize("x000");
+				ImVec2 textSize = ImGui::CalcTextSize("x00000");
 				ImVec2 textPos = ImVec2(pos.x + windowContentWidth - textSize.x - pd, pos.y + bgRect.y - textSize.y);
 				drawList->AddRectFilled(
 					textPos,

@@ -7,10 +7,21 @@
 #include <iostream>
 
 #include "./utils/hwinfo.hpp"
+#include "./utils/threading.hpp"
 #include "app.hpp"
 
 //#define RES_FHD
 #define RES_4K
+
+#if defined(RES_FHD)
+#define DEF_SCREEN_W 1080
+#define DEF_SCREEN_H 720
+#define FONT_PIXEL_SIZE 16
+#elif defined(RES_4K)
+#define DEF_SCREEN_W 1920
+#define DEF_SCREEN_H 1080
+#define FONT_PIXEL_SIZE 22
+#endif
 
 void errorCallback(int errorCode, const char* description);
 void keyCallback(GLFWwindow* window, int key, int scancode, int action, int mods);
@@ -34,13 +45,9 @@ int WinMain(int argc, char* argv[])
 {
     hwinfo::init();
     atexit(hwinfo::exit);
+    threading::lockCurrentThread(hwinfo::extra::runningCoreInd());
 
-#ifdef RES_FHD
-    int w = 1080, h = 720;
-#endif // RES_FHD
-#ifdef RES_4K
-    int w = 1920, h = 1080;
-#endif // RES_4K
+    int w = DEF_SCREEN_W, h = DEF_SCREEN_H;
     App app;
 
     // Init
@@ -177,12 +184,7 @@ int initImGui(GLFWwindow* window) {
     if (!ImGui_ImplOpenGL3_Init("#version 450")) return 2;
     ImGuiIO& io = ImGui::GetIO();
     ImFontConfig cfg;
-#ifdef RES_FHD
-    cfg.SizePixels = 16;
-#endif // RES_FHD
-#ifdef RES_4K
-    cfg.SizePixels = 24;
-#endif // RES_4K
+    cfg.SizePixels = FONT_PIXEL_SIZE;
     //io.Fonts->AddFontDefault(&cfg);
     // https://www.fontsquirrel.com/fonts/Luxi-Mono
     io.Fonts->AddFontFromFileTTF(".\\assets\\luximr.ttf", cfg.SizePixels, &cfg);

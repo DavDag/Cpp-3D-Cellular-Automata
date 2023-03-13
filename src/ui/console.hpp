@@ -17,7 +17,7 @@ public:
 	//
 	void initialize();
 	void update(double dtSec);
-	void render(int w, int h);
+	void ui(int w, int h);
 	//
 	void log(LineData::Type type, ImU32 col, const char* line);
 	//
@@ -26,7 +26,7 @@ public:
 
 private:
 	App& _app;
-	bool _autowrap;
+	bool _autowrap, _uilocked;
 	int _rowCount, _rowLenght, _currentRow;
 	LineData* _lines;
 	//
