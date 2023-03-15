@@ -25,6 +25,9 @@ public:
 	void unbind();
 	//
 	void uniform1u(GLUniformName name, unsigned int value);
+	void uniform1i(GLUniformName name, int value);
+	void uniform1f(GLUniformName name, float value);
+	void uniformVec3f(GLUniformName name, const glm::vec3& value);
 	void uniformMat4f(GLUniformName name, const glm::mat4& value);
 
 public:

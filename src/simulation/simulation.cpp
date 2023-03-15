@@ -186,7 +186,7 @@ Simulation::Simulation(App& app) :
 	_app(app),
 	_renderer(app, *this)
 {
-	this->_paused = false;
+	this->_paused = true; // false
 	this->_tickPerSec = 8;
 	this->_timeSinceLastTickSec = 0;
 	this->_timeAccSec = 0;

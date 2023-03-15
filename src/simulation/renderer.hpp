@@ -5,6 +5,7 @@
 
 class App;
 class Simulation;
+class Camera;
 
 struct GLCell {
 	union {
@@ -33,20 +34,36 @@ public:
 	//
 	void initialize();
 	void update(double dtSec);
-	void render(const World& world, const glm::mat4& camera, int w, int h);
+	void render(const World& world, Camera& camera, int w, int h);
 	void ui(int w, int h);
 	//
 	void setMaxCellCount(int count);
 
 private:
+	void _computeDrawList(const World& world);
+	void _shadowPass(const World& world, Camera& camera);
+	void _gridPass(const World& world, Camera& camera);
+	void _cubesPass(const World& world, Camera& camera);
+
+	glm::mat4 lightSpaceMat(const World& world) const;
+
+private:
 	App& _app;
 	Simulation& _sim;
-	//
+	// Grid
+	GLProgram _gridProgram;
+	GLuint _gridVAO;
+	// Cubes
 	int _maxCellCount;
 	int _cellsToDrawCount;
 	GLCell* _cellsToDrawList;
-	//
-	GLProgram _gridProgram, _cubeInstProgram;
-	GLuint _gridVAO, _cubeInstVAO;
+	GLProgram _cubeInstProgram;
+	GLuint _cubeInstVAO;
 	GLuint _cubeInstVBO2;
+	glm::vec3 _lightDir, _lightCol;
+	float _lightAmbCoeff, _lightDifCoeff, _lightSpeCoeff;
+	// Shadow
+	GLuint _shadowFBO;
+	GLuint _shadowTex;
+	GLProgram _shadowProgram;
 };

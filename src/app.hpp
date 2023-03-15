@@ -13,7 +13,7 @@ class App {
 public:
 	App();
 	//
-	const glm::mat4& camera();
+	Camera& camera();
 	//
 	void initialize();
 	void render(int w, int h);

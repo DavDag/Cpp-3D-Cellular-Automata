@@ -10,7 +10,9 @@ public:
 	//
 	const glm::mat4& matrix();
 	void info() const;
+	//
 	float zoom() const;
+	const glm::vec3 pos() const;
 	//
 	void movepos(const glm::vec3& delta);
 	void setpos(const glm::vec3& pos);

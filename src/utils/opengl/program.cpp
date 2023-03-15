@@ -55,6 +55,24 @@ void GLProgram::uniform1u(GLUniformName name, unsigned int value) {
 	GL_CALL(glUniform1ui(loc, value));
 }
 
+void GLProgram::uniform1i(GLUniformName name, int value) {
+	GLint loc = 0;
+	GL_CALL(loc = glGetUniformLocation(this->_id, name));
+	GL_CALL(glUniform1i(loc, value));
+}
+
+void GLProgram::uniform1f(GLUniformName name, float value) {
+	GLint loc = 0;
+	GL_CALL(loc = glGetUniformLocation(this->_id, name));
+	GL_CALL(glUniform1f(loc, value));
+}
+
+void GLProgram::uniformVec3f(GLUniformName name, const glm::vec3& value) {
+	GLint loc = 0;
+	GL_CALL(loc = glGetUniformLocation(this->_id, name));
+	GL_CALL(glUniform3fv(loc, 1, &value[0]));
+}
+
 void GLProgram::uniformMat4f(GLUniformName name, const glm::mat4& value) {
 	GLint loc = 0;
 	GL_CALL(loc = glGetUniformLocation(this->_id, name));

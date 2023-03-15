@@ -48,99 +48,98 @@ void Console::update(double dtSec) {
 void Console::ui(int w, int h) {
 	ImGui::SetNextWindowPos(ImVec2(w * 0.25f, h  * 0.75f), ImGuiCond_FirstUseEver);
 	ImGui::SetNextWindowSize(ImVec2((float) w * 0.5f, h * 0.25f), ImGuiCond_FirstUseEver);
-	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_NoCollapse
-		| ImGuiWindowFlags_AlwaysVerticalScrollbar;
+	ImGuiWindowFlags windowFlags = ImGuiWindowFlags_AlwaysVerticalScrollbar;
 	if (this->_uilocked)
 		windowFlags |= ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoResize;
-	ImGui::Begin("Console", nullptr, windowFlags);
-	float windowContentWidth = ImGui::GetWindowContentRegionWidth();
-	//
-	ImGui::Checkbox("Autowrap", &this->_autowrap);
-	ImGui::SameLine();
-	ImGui::Checkbox("Lock", &this->_uilocked);
-	ImGui::PushItemWidth(windowContentWidth);
-	ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_EnterReturnsTrue
-		| ImGuiInputTextFlags_CallbackHistory;
-	ImGuiInputTextCallback textcallback = [](ImGuiInputTextCallbackData* data) -> int {
-		Console& console = *((Console*) data->UserData);
-		if (console.getHistorySize() == 0) return 0;
-		int delta = 0;
-		switch (data->EventFlag) {
-			case ImGuiInputTextFlags_CallbackHistory:
-				if (data->EventKey == ImGuiKey_DownArrow) delta = -1;
-				else if (data->EventKey == ImGuiKey_UpArrow) delta = 1;
-				break;
-			default:
-				return 0;
-		}
-		const char* cmd = console.getHistoryCmd(delta);
-		data->DeleteChars(0, data->BufTextLen);
-		data->InsertChars(0, cmd);
-		return 0;
-	};
-	if (ImGui::InputText("##cmdline", this->_cmdBuffer, this->_rowLenght, inputFlags, textcallback, this)) {
-		// save command into history
-		char* historyline = this->_cmdHistory[(this->_cmdHistoryIndexNextFree % this->_cmdHistorySize)];
-		memcpy(historyline, this->_cmdBuffer, this->_rowLenght);
-		this->_cmdHistoryIndex = 0;
-		this->_cmdHistoryIndexNextFree++;
-		// send command to app
-		this->_app.parse(this->_cmdBuffer);
-		memset(this->_cmdBuffer, '\0', sizeof(char) * this->_rowLenght);
-		ImGui::SetKeyboardFocusHere(-1);
-	}
-	ImGui::PopItemWidth();
-	int extraspacey = 2;
-	ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 2 * extraspacey));
-	float wrapPos = (this->_autowrap) ? windowContentWidth : ImGui::GetFontSize() * this->_rowLenght;
-	ImGui::PushTextWrapPos(wrapPos);
-	ImGuiListClipper clipper;
-	clipper.Begin(this->_rowCount, ImGui::GetTextLineHeight());
-	while (clipper.Step())
-		for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
-			// Line data
-			int j = (this->_currentRow - i + this->_rowCount - 1) % this->_rowCount;
-			LineData linedata = this->_lines[j];
-			const char* rowBeg = linedata.buffer;
-			const char* rowEnd = rowBeg + strlen(rowBeg);
-			// Row background
-			ImDrawList* drawList = ImGui::GetWindowDrawList();
-			ImVec2 bgRect = ImGui::CalcTextSize(rowBeg, rowEnd, false, wrapPos);
-			bgRect.y += 2 * extraspacey;
-			ImVec2 pos = ImGui::GetCursorScreenPos();
-			pos.y -= extraspacey;
-			drawList->AddRectFilled(pos, ImVec2(pos.x + windowContentWidth, pos.y + bgRect.y), IM_COL32(128, 128, 128, 32 * (j % 2 + 1)));
-			// Text
-			ImGui::PushStyleColor(ImGuiCol_Text, linedata.color);
-			ImGui::TextUnformatted(rowBeg, rowEnd);
-			ImGui::PopStyleColor();
-			// Repeat badge
-			if (linedata.repeatcount > 1) {
-				char badge[16];
-				sprintf_s(badge, "x%05d", linedata.repeatcount);
-				float pd = 2.0f;
-				ImVec2 textSize = ImGui::CalcTextSize("x00000");
-				ImVec2 textPos = ImVec2(pos.x + windowContentWidth - textSize.x - pd, pos.y + bgRect.y - textSize.y);
-				drawList->AddRectFilled(
-					textPos,
-					ImVec2(textPos.x + textSize.x + 2 * pd, textPos.y + textSize.y),
-					IM_COL32_BLACK
-				);
-				drawList->AddText(
-					ImVec2(textPos.x + pd, textPos.y),
-					IM_COL32_WHITE,
-					badge
-				);
+	if (ImGui::Begin("Console", nullptr, windowFlags)) {
+		float windowContentWidth = ImGui::GetWindowContentRegionWidth();
+		//
+		ImGui::Checkbox("Autowrap", &this->_autowrap);
+		ImGui::SameLine();
+		ImGui::Checkbox("Lock", &this->_uilocked);
+		ImGui::PushItemWidth(windowContentWidth);
+		ImGuiInputTextFlags inputFlags = ImGuiInputTextFlags_EnterReturnsTrue
+			| ImGuiInputTextFlags_CallbackHistory;
+		ImGuiInputTextCallback textcallback = [](ImGuiInputTextCallbackData* data) -> int {
+			Console& console = *((Console*) data->UserData);
+			if (console.getHistorySize() == 0) return 0;
+			int delta = 0;
+			switch (data->EventFlag) {
+				case ImGuiInputTextFlags_CallbackHistory:
+					if (data->EventKey == ImGuiKey_DownArrow) delta = -1;
+					else if (data->EventKey == ImGuiKey_UpArrow) delta = 1;
+					break;
+				default:
+					return 0;
 			}
-			//
-			if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay))
-				ImGui::SetTooltip("Right click to copy text");
-			if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
-				ImGui::SetClipboardText(rowBeg);
+			const char* cmd = console.getHistoryCmd(delta);
+			data->DeleteChars(0, data->BufTextLen);
+			data->InsertChars(0, cmd);
+			return 0;
+		};
+		if (ImGui::InputText("##cmdline", this->_cmdBuffer, this->_rowLenght, inputFlags, textcallback, this)) {
+			// save command into history
+			char* historyline = this->_cmdHistory[(this->_cmdHistoryIndexNextFree % this->_cmdHistorySize)];
+			memcpy(historyline, this->_cmdBuffer, this->_rowLenght);
+			this->_cmdHistoryIndex = 0;
+			this->_cmdHistoryIndexNextFree++;
+			// send command to app
+			this->_app.parse(this->_cmdBuffer);
+			memset(this->_cmdBuffer, '\0', sizeof(char) * this->_rowLenght);
+			ImGui::SetKeyboardFocusHere(-1);
 		}
-	ImGui::PopTextWrapPos();
-	ImGui::PopStyleVar();
-	//
+		ImGui::PopItemWidth();
+		int extraspacey = 2;
+		ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2(0, 2 * extraspacey));
+		float wrapPos = (this->_autowrap) ? windowContentWidth : ImGui::GetFontSize() * this->_rowLenght;
+		ImGui::PushTextWrapPos(wrapPos);
+		ImGuiListClipper clipper;
+		clipper.Begin(this->_rowCount, ImGui::GetTextLineHeight());
+		while (clipper.Step())
+			for (int i = clipper.DisplayStart; i < clipper.DisplayEnd; i++) {
+				// Line data
+				int j = (this->_currentRow - i + this->_rowCount - 1) % this->_rowCount;
+				LineData linedata = this->_lines[j];
+				const char* rowBeg = linedata.buffer;
+				const char* rowEnd = rowBeg + strlen(rowBeg);
+				// Row background
+				ImDrawList* drawList = ImGui::GetWindowDrawList();
+				ImVec2 bgRect = ImGui::CalcTextSize(rowBeg, rowEnd, false, wrapPos);
+				bgRect.y += 2 * extraspacey;
+				ImVec2 pos = ImGui::GetCursorScreenPos();
+				pos.y -= extraspacey;
+				drawList->AddRectFilled(pos, ImVec2(pos.x + windowContentWidth, pos.y + bgRect.y), IM_COL32(128, 128, 128, 32 * (j % 2 + 1)));
+				// Text
+				ImGui::PushStyleColor(ImGuiCol_Text, linedata.color);
+				ImGui::TextUnformatted(rowBeg, rowEnd);
+				ImGui::PopStyleColor();
+				// Repeat badge
+				if (linedata.repeatcount > 1) {
+					char badge[16];
+					sprintf_s(badge, "x%05d", linedata.repeatcount);
+					float pd = 2.0f;
+					ImVec2 textSize = ImGui::CalcTextSize("x00000");
+					ImVec2 textPos = ImVec2(pos.x + windowContentWidth - textSize.x - pd, pos.y + bgRect.y - textSize.y);
+					drawList->AddRectFilled(
+						textPos,
+						ImVec2(textPos.x + textSize.x + 2 * pd, textPos.y + textSize.y),
+						IM_COL32_BLACK
+					);
+					drawList->AddText(
+						ImVec2(textPos.x + pd, textPos.y),
+						IM_COL32_WHITE,
+						badge
+					);
+				}
+				//
+				if (ImGui::IsItemHovered(ImGuiHoveredFlags_DelayNormal | ImGuiHoveredFlags_NoSharedDelay))
+					ImGui::SetTooltip("Right click to copy text");
+				if (ImGui::IsItemClicked(ImGuiMouseButton_Right))
+					ImGui::SetClipboardText(rowBeg);
+			}
+		ImGui::PopTextWrapPos();
+		ImGui::PopStyleVar();
+	}
 	ImGui::End();
 }
 

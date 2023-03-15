@@ -18,8 +18,8 @@
 #define DEF_SCREEN_H 720
 #define FONT_PIXEL_SIZE 16
 #elif defined(RES_4K)
-#define DEF_SCREEN_W 1920
-#define DEF_SCREEN_H 1080
+#define DEF_SCREEN_W 2560
+#define DEF_SCREEN_H 1440
 #define FONT_PIXEL_SIZE 22
 #endif
 

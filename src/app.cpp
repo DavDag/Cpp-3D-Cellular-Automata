@@ -44,24 +44,19 @@ void App::update(double dtSec) {
 void App::render(int w, int h) {
 	///////////////////////////////////////
 	// Camera update
-	glm::vec4 pos(0.0f, 0.0f, -1.0f, 1.0f);
+	glm::vec4 pos(0.0f, 0.0f, 1.0f, 1.0f);
 	glm::mat4 rotX(1.0f), rotY(1.0f);
 	rotX = glm::rotate<float>(rotX, glm::radians((float)this->_cameraAngleX), glm::vec3(0, 1, 0));
 	rotY = glm::rotate<float>(rotY, glm::radians((float)this->_cameraAngleY), glm::vec3(1, 0, 0));
 	pos = (rotX * pos + (rotX * rotY) * pos);
 	pos = glm::normalize(pos);
-	pos *= (1.0f / this->_camera.zoom()) * this->_simulation.size() * 3.0f;
+	pos *= (1.0f / this->_camera.zoom()) * this->_simulation.size();
 	this->_camera.setpos(pos);
 	this->_camera.setviewport(w, h);
 
 	///////////////////////////////////////
 	// Simulation update
-	GL_CALL(glEnable(GL_DEPTH_TEST));
-	GL_CALL(glEnable(GL_CULL_FACE));
-	GL_CALL(glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT));
 	this->_simulation.render(w, h);
-	GL_CALL(glDisable(GL_CULL_FACE));
-	GL_CALL(glDisable(GL_DEPTH_TEST));
 
 	///////////////////////////////////////
 	// UI
@@ -80,13 +75,6 @@ void App::onKeyDown(int key) {
 			break;
 		}
 
-		case GLFW_KEY_A:
-		case GLFW_KEY_LEFT: {
-			this->_cameraAngleX -= 5;
-			this->_cameraAngleX %= 360;
-			break;
-		}
-		
 		case GLFW_KEY_D:
 		case GLFW_KEY_RIGHT: {
 			this->_cameraAngleX += 5;
@@ -94,17 +82,24 @@ void App::onKeyDown(int key) {
 			break;
 		}
 
+		case GLFW_KEY_A:
+		case GLFW_KEY_LEFT: {
+			this->_cameraAngleX -= 5;
+			this->_cameraAngleX %= 360;
+			break;
+		}
+
 		case GLFW_KEY_S:
 		case GLFW_KEY_DOWN: {
-			this->_cameraAngleY -= 5;
-			this->_cameraAngleY = glm::max(this->_cameraAngleY, -90);
+			this->_cameraAngleY += 5;
+			this->_cameraAngleY = glm::min(this->_cameraAngleY, 90);
 			break;
 		}
 
 		case GLFW_KEY_W:
 		case GLFW_KEY_UP: {
-			this->_cameraAngleY += 5;
-			this->_cameraAngleY = glm::min(this->_cameraAngleY, 90);
+			this->_cameraAngleY -= 5;
+			this->_cameraAngleY = glm::max(this->_cameraAngleY, -90);
 			break;
 		}
 
@@ -130,7 +125,6 @@ void App::onMouseWheel(double dx, double dy) {
 }
 
 void App::onResize(int width, int height) {
-	glViewport(0, 0, width, height);
 	this->_camera.setviewport(width, height);
 }
 
@@ -220,8 +214,8 @@ void App::execute(int type, CommandArgs* args) {
 	return;
 }
 
-const glm::mat4& App::camera() {
-	return this->_camera.matrix();
+Camera& App::camera() {
+	return this->_camera;
 }
 
 void App::raw(const char* fmt, ...) {

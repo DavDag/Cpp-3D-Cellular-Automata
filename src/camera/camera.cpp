@@ -84,6 +84,10 @@ float Camera::zoom() const {
 	return this->_zoom;
 }
 
+const glm::vec3 Camera::pos() const {
+	return this->_pos;
+}
+
 void Camera::movepos(const glm::vec3& delta) {
 	this->_dirty |= (delta != v3fZero);
 	this->_pos += delta;
