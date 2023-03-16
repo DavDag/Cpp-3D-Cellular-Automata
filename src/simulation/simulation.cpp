@@ -1,6 +1,7 @@
 #include "simulation.hpp"
 #include "../app.hpp"
 
+#include <ppl.h>
 #include <random>
 
 #define MAX_RULE_LENGHT 512
@@ -186,7 +187,8 @@ Simulation::Simulation(App& app) :
 	_app(app),
 	_renderer(app, *this)
 {
-	this->_paused = true; // false
+	this->_paused = true;
+	this->_parallel = false;
 	this->_tickPerSec = 8;
 	this->_timeSinceLastTickSec = 0;
 	this->_timeAccSec = 0;
@@ -230,44 +232,90 @@ void Simulation::__tick() {
 	this->_app.deb("simulation tick");
 	const int ws = this->_world.side();
 	const int initialstate = this->_rule.stateCount - 1;
-	for (int x = 0; x < ws; ++x)
-		for (int y = 0; y < ws; ++y)
-			for (int z = 0; z < ws; ++z) {
-				WorldCell data = this->_world.get(x, y, z);
-				//
-				int neighbours = 0;
-				switch (this->_rule.method) {
-				case SimRule::Method::MOORE: {
-					neighbours = this->_world.countMoore(initialstate, x, y, z);
-					break;
+	if (this->_parallel) {
+		auto partitioner = concurrency::affinity_partitioner();
+		concurrency::parallel_for(0, ws, [&](size_t z) {
+			for (int x = 0; x < ws; ++x)
+				for (int y = 0; y < ws; ++y) {
+					WorldCell data = this->_world.get(x, y, z);
+					//
+					int neighbours = 0;
+					switch (this->_rule.method) {
+						case SimRule::Method::MOORE: {
+							neighbours = this->_world.countMoore(initialstate, x, y, z);
+							break;
+						}
+						case SimRule::Method::NEUMANN: {
+							neighbours = this->_world.countNeumann(initialstate, x, y, z);
+							break;
+						}
+					}
+					data.neighbours = neighbours;
+					//
+					if (data.status == initialstate) {
+						// alive
+						if (this->_rule.aliveWith->contains(neighbours))
+							data.nextstatus = data.status;
+						else
+							data.nextstatus = initialstate - 1;
+					}
+					else if (data.status == 0) {
+						// born
+						if (this->_rule.bornWith->contains(neighbours))
+							data.nextstatus = initialstate;
+						else
+							data.nextstatus = 0;
+					}
+					else {
+						// decrement
+						data.nextstatus = data.status - 1;
+					}
+					this->_world.set(data, x, y, z);
 				}
-				case SimRule::Method::NEUMANN: {
-					neighbours = this->_world.countNeumann(initialstate, x, y, z);
-					break;
+			},
+			partitioner
+		);
+	}
+	else {
+		for (int x = 0; x < ws; ++x)
+			for (int y = 0; y < ws; ++y)
+				for (int z = 0; z < ws; ++z) {
+					WorldCell data = this->_world.get(x, y, z);
+					//
+					int neighbours = 0;
+					switch (this->_rule.method) {
+						case SimRule::Method::MOORE: {
+							neighbours = this->_world.countMoore(initialstate, x, y, z);
+							break;
+						}
+						case SimRule::Method::NEUMANN: {
+							neighbours = this->_world.countNeumann(initialstate, x, y, z);
+							break;
+						}
+					}
+					data.neighbours = neighbours;
+					//
+					if (data.status == initialstate) {
+						// alive
+						if (this->_rule.aliveWith->contains(neighbours))
+							data.nextstatus = data.status;
+						else
+							data.nextstatus = initialstate - 1;
+					}
+					else if (data.status == 0) {
+						// born
+						if (this->_rule.bornWith->contains(neighbours))
+							data.nextstatus = initialstate;
+						else
+							data.nextstatus = 0;
+					}
+					else {
+						// decrement
+						data.nextstatus = data.status - 1;
+					}
+					this->_world.set(data, x, y, z);
 				}
-				}
-				data.neighbours = neighbours;
-				//
-				if (data.status == initialstate) {
-					// alive
-					if (this->_rule.aliveWith->contains(neighbours))
-						data.nextstatus = data.status;
-					else
-						data.nextstatus = initialstate - 1;
-				}
-				else if (data.status == 0) {
-					// born
-					if (this->_rule.bornWith->contains(neighbours))
-						data.nextstatus = initialstate;
-					else
-						data.nextstatus = 0;
-				}
-				else {
-					// decrement
-					data.nextstatus = data.status - 1;
-				}
-				this->_world.set(data, x, y, z);
-			}
+	}
 	this->_world.flip();
 }
 
@@ -358,13 +406,16 @@ void Simulation::ui(int w, int h) {
 	/////////////////////////////////////////
 	// Speed
 	ImGui::SeparatorText("");
+	ImGui::Checkbox("Parallel Execution", &this->_parallel);
 	ImGui::Text("Speed: %d t/s", this->_tickPerSec);
-	for (int i = 0; i <= 6; ++i) {
+	for (int i = 0; i <= 8; ++i) {
 		int v = 1 << (i + 0);
 		char buff[4];
 		sprintf_s(buff, "%2d", v);
 		if (i > 0) ImGui::SameLine();
+		if (i >= 6) ImGui::BeginDisabled(!this->_parallel);
 		if (ImGui::RadioButton(buff, this->_tickPerSec == v)) this->setspeed(v);
+		if (i >= 6) ImGui::EndDisabled();
 	}
 	ImGui::Text("Tick time (avg): %d ms", 12);
 	ImGui::Text("Tick time (min): %d ms", 8);
@@ -374,11 +425,11 @@ void Simulation::ui(int w, int h) {
 	ImGui::SeparatorText("");
 	ImGui::Text("Size: %d x %d x %d", this->size(), this->size(), this->size());
 	for (int i = 0; i <= 3; ++i) {
-		int v = 1 << (i + 4);
-		char buff[4];
-		sprintf_s(buff, "%3d", v);
+		int v = (1 << (i + 4));
+		char buff[8];
+		sprintf_s(buff, "%4d", v);
 		if (i > 0) ImGui::SameLine();
-		if (ImGui::RadioButton(buff, this->size() == v)) this->setsize(v);
+		if (ImGui::RadioButton(buff, (this->size() == v))) this->setsize(v);
 	}
 	ImGui::Text("Cell count: %8d", this->_world.size());
 	ImGui::Text("World Size: %8.2f Mb", this->_world.size() * sizeof(WorldCell) / 1024.0f / 1024.0f);

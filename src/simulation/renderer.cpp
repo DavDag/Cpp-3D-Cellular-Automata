@@ -3,6 +3,8 @@
 #include "simulation.hpp"
 #include "../app.hpp"
 
+#include <ppl.h>
+
 #define SHADOW_WIDTH  4096
 #define SHADOW_HEIGHT 4096
 
@@ -10,6 +12,7 @@ Renderer::Renderer(App& app, Simulation& sim):
 	_app(app),
 	_sim(sim)
 {
+	this->_parallel = false;
 	// Grid
 	this->_gridVAO = 0;
 	// Cubes
@@ -356,6 +359,7 @@ void Renderer::ui(int w, int h) {
 	///////////////////////////////////////////////
 	// Params
 	ImGui::SeparatorText("");
+	ImGui::Checkbox("Parallel", &this->_parallel);
 	ImGui::SliderFloat3("LightDir", &this->_lightDir[0], -1.0f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
 	this->_lightDir = glm::normalize(this->_lightDir);
 	ImGui::SliderFloat3("LightCol", &this->_lightCol[0], 0.0f, 1.0f, "%.2f", ImGuiSliderFlags_AlwaysClamp);
@@ -396,17 +400,52 @@ void Renderer::setMaxCellCount(int count) {
 
 void Renderer::_computeDrawList(const World& world) {
 	const int ws = world.side();
-	this->_cellsToDrawCount = 0;
-	for (int ci = 0; ci < world.size(); ++ci) {
-		WorldCell worldcell = world.get(ci);
-		if (worldcell.status != 0) {
-			GLCell glcell = { 0 };
-			glcell.coords.x = (ci / ws / ws) % ws;
-			glcell.coords.y = (ci / ws) % ws;
-			glcell.coords.z = (ci) % ws;
-			glcell.coords._ = 0;
-			this->_sim.applyColorRule(worldcell, glcell);
-			this->_cellsToDrawList[this->_cellsToDrawCount++] = glcell;
+	if (this->_parallel) {
+		auto partitioner = concurrency::auto_partitioner();
+		concurrency::parallel_for(0, world.size(), [&](size_t ci) {
+				WorldCell worldcell = world.get(ci);
+				// reset flag
+				this->_cellsToDrawList[ci].coords._ = 0;
+				// 1st check: cell alive
+				if (worldcell.status == 0) return;
+				// 2nd check: 6 neumann neighbours are all != 0
+				int x = (ci / ws / ws) % ws;
+				int y = (ci / ws) % ws;
+				int z = (ci) % ws;
+				int neumannZeros = world.countNeumann(0, x, y, z);
+				if (neumannZeros == 0) return;
+				// Load cell
+				GLCell glcell = { 0 };
+				glcell.coords.x = x;
+				glcell.coords.y = y;
+				glcell.coords.z = z;
+				glcell.coords._ = 1;
+				this->_sim.applyColorRule(worldcell, glcell);
+				this->_cellsToDrawList[ci] = glcell;
+			},
+			partitioner
+		);
+		//
+		this->_cellsToDrawCount = 0;
+		for (int ci = 0; ci < world.size(); ++ci) {
+			GLCell glcell = this->_cellsToDrawList[ci];
+			if (glcell.coords._ != 0)
+				this->_cellsToDrawList[this->_cellsToDrawCount++] = glcell;
+		}
+	}
+	else {
+		this->_cellsToDrawCount = 0;
+		for (int ci = 0; ci < world.size(); ++ci) {
+			WorldCell worldcell = world.get(ci);
+			if (worldcell.status != 0) {
+				GLCell glcell = { 0 };
+				glcell.coords.x = (ci / ws / ws) % ws;
+				glcell.coords.y = (ci / ws) % ws;
+				glcell.coords.z = (ci) % ws;
+				glcell.coords._ = 0;
+				this->_sim.applyColorRule(worldcell, glcell);
+				this->_cellsToDrawList[this->_cellsToDrawCount++] = glcell;
+			}
 		}
 	}
 	//

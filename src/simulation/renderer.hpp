@@ -50,6 +50,7 @@ private:
 private:
 	App& _app;
 	Simulation& _sim;
+	bool _parallel;
 	// Grid
 	GLProgram _gridProgram;
 	GLuint _gridVAO;

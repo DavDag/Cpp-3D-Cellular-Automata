@@ -66,7 +66,7 @@ private:
 private:
 	App& _app;
 	//
-	bool _paused;
+	bool _paused, _parallel;
 	double _timeSinceLastTickSec;
 	int _tickPerSec;
 	double _timeAccSec;
