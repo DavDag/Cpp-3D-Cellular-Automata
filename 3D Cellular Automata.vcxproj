@@ -57,15 +57,16 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>GLFW_INCLUDE_NONE;GLEW_STATIC;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>$(ProjectDir)deps\glfw-3.3.8\include;$(ProjectDir)deps\glew-2.2.0\include;$(ProjectDir)deps\imgui-1.89.3;$(ProjectDir)deps\glm-0.9.9.8;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)deps\glfw-3.3.8\include;$(ProjectDir)deps\glew-2.2.0\include;$(ProjectDir)deps\imgui-1.89.3;$(ProjectDir)deps\glm-0.9.9.8;$(ProjectDir)deps\ProfilerLib\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <SupportJustMyCode>false</SupportJustMyCode>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(ProjectDir)deps\glew-2.2.0\lib\Release\x64;$(ProjectDir)deps\glfw-3.3.8\src\Debug</AdditionalLibraryDirectories>
-      <AdditionalDependencies>glfw3.lib;glew32s.lib;opengl32.lib;ntdll.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(ProjectDir)deps\glew-2.2.0\lib\Release\x64;$(ProjectDir)deps\glfw-3.3.8\src\Debug;$(ProjectDir)deps\ProfilerLib\lib\Debug</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ProfilerLib.lib;glfw3.lib;glew32s.lib;opengl32.lib;ntdll.lib;pdh.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -97,20 +98,41 @@
     <ClCompile Include="deps\imgui-1.89.3\imgui_draw.cpp" />
     <ClCompile Include="deps\imgui-1.89.3\imgui_tables.cpp" />
     <ClCompile Include="deps\imgui-1.89.3\imgui_widgets.cpp" />
-    <ClCompile Include="src\app.cpp" />
-    <ClCompile Include="src\camera\camera.cpp" />
-    <ClCompile Include="src\command\command.cpp" />
-    <ClCompile Include="src\command\command_deps.cpp" />
-    <ClCompile Include="src\command\command_hwinfo.cpp" />
-    <ClCompile Include="src\main.cpp" />
-    <ClCompile Include="src\simulation\renderer.cpp" />
-    <ClCompile Include="src\simulation\simulation.cpp" />
-    <ClCompile Include="src\ui\console.cpp" />
+    <ClCompile Include="src\app.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\camera\camera.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\command\command.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\command\command_deps.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\command\command_hwinfo.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\main.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\simulation\renderer.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\simulation\simulation.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
+    <ClCompile Include="src\simulation\world.cpp" />
+    <ClCompile Include="src\ui\console.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="src\utils\hwinfo.cpp" />
     <ClCompile Include="src\utils\opengl\common.cpp" />
     <ClCompile Include="src\utils\opengl\program.cpp" />
     <ClCompile Include="src\utils\opengl\shader.cpp" />
-    <ClCompile Include="src\ui\usagedisplay.cpp" />
+    <ClCompile Include="src\ui\usagedisplay.cpp">
+      <AdditionalOptions Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">/GH /Gh %(AdditionalOptions)</AdditionalOptions>
+    </ClCompile>
     <ClCompile Include="src\utils\threading.cpp" />
   </ItemGroup>
   <ItemGroup>

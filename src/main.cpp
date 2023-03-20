@@ -1,3 +1,5 @@
+#include <profilerlib.hpp>
+
 #include <GLFW/glfw3.h>
 #include <GL/glew.h>
 #include <imgui.h>
@@ -43,6 +45,9 @@ int main(int argc, char* argv[])
 int WinMain(int argc, char* argv[])
 #endif
 {
+    profiler::Enable();
+    profiler::FrameStart();
+
     hwinfo::init();
     atexit(hwinfo::exit);
     threading::lockCurrentThread(hwinfo::extra::runningCoreInd());
@@ -67,11 +72,22 @@ int WinMain(int argc, char* argv[])
 
     app.initialize();
 
+    profiler::FrameEnd();
+    profiler::Disable();
+    printf("==========================================================History==========================================================\n");
+    profiler::LogHistory();
+    printf("==========================================================Initialization==========================================================\n");
+    profiler::LogStats();
+    profiler::ClearStats();
+    profiler::Enable();
+    
+
     // Main loop
     glfwSwapInterval(1);
     double lastFrameTimeSec = glfwGetTime();
     while (!glfwWindowShouldClose(window))
     {
+        profiler::FrameStart();
         glfwGetFramebufferSize(window, &w, &h);
         glfwPollEvents();
         // update
@@ -89,7 +105,11 @@ int WinMain(int argc, char* argv[])
         ImGui::Render();
         ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
         glfwSwapBuffers(window);
+        profiler::FrameEnd();
     }
+    profiler::Disable();
+    printf("==========================================================Main==========================================================\n");
+    profiler::LogStats();
 
     // End
     exitImGui();
