@@ -55,7 +55,7 @@ https://github.com/user-attachments/assets/6365dd43-a6b0-4068-b306-dbe924be8af4
 </ul>
 <br clear="left"/>
 
-### Console
+### Features: Console-tab
 <img src="https://github.com/user-attachments/assets/d3c5ceab-0c81-44da-b079-03f259e025e7" width="300px" align="left" />
 <ul>
   <li>Real-Time Logging preview (every event / action is logged)</li>
@@ -66,8 +66,15 @@ https://github.com/user-attachments/assets/6365dd43-a6b0-4068-b306-dbe924be8af4
 </ul>
 <br clear="left"/>
 
-### Profiling
-
+### Features: Profiling
+<img src="https://github.com/user-attachments/assets/74a6f5f1-5f2b-4c60-960d-01ce8977b86c" width="800px" align="left" />
+<ul>
+  <li>Frame Profile Plotting</li>
+  <li>Statistics with Min, Max, Avg & Tot</li>
+  <li>Stack trace</li>
+  <li>Move, Zoom In & Out, Select time slice and personalize Time Frame</li>
+</ul>
+<br clear="left"/>
 
 ## Screenshots
 
