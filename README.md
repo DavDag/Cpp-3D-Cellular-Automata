@@ -3,7 +3,7 @@
 Evolution of another one of my [project](https://github.com/DavDag/3D-Cellular-Automata) done in C++ & OpenGL using ImGUI and **nothing more**.<br>
 You should be able to clone the repo and launch the project using the provided .sln since every dependency is also inside the repo.<br>
 
-Is uses another one of my [project](https://github.com/DavDag/InGameProfiler) that provides a profiling lib.<br>
+Is uses another one of my [project](https://github.com/DavDag/SignatureProfiler) that provides a profiling lib.<br>
 
 ## Demo
 
@@ -65,6 +65,9 @@ https://github.com/user-attachments/assets/6365dd43-a6b0-4068-b306-dbe924be8af4
   <li>Colored Output :)</li>
 </ul>
 <br clear="left"/>
+
+### Profiling
+
 
 ## Screenshots
 
